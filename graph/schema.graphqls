@@ -71,5 +71,5 @@ type Other {
 	BUYSELL: Float!
 }
 type Query {
-  crypto(name: String!): crypto!
+  crypto(name: String!): [crypto!]!
 }

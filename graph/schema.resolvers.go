@@ -5,14 +5,14 @@ package graph
 
 import (
 	"context"
-	"fmt"
 
+	"github.com/chenak/hackernews/database"
 	"github.com/chenak/hackernews/graph/generated"
 	"github.com/chenak/hackernews/graph/model"
 )
 
-func (r *queryResolver) Crypto(ctx context.Context, name string) (*model.Crypto, error) {
-	panic(fmt.Errorf("not implemented"))
+func (r *queryResolver) Crypto(ctx context.Context, name string) ([]*model.Crypto, error) {
+	return database.Data(name), nil
 }
 
 // Query returns generated.QueryResolver implementation.
