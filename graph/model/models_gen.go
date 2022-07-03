@@ -2,19 +2,81 @@
 
 package model
 
-type NewTodo struct {
-	Text   string `json:"text"`
-	UserID string `json:"userId"`
+type Ai struct {
+	Bigmome   *Bigmome   `json:"bigmome"`
+	Sell      *Sell      `json:"sell"`
+	Smallmome *Smallmome `json:"smallmome"`
+	Buy       *Buy       `json:"buy"`
+	Mome      *Mome      `json:"mome"`
+	Other     *Other     `json:"other"`
 }
 
-type Todo struct {
-	ID   string `json:"id"`
-	Text string `json:"text"`
-	Done bool   `json:"done"`
-	User *User  `json:"user"`
+type Buy struct {
+	Ambb  float64 `json:"ambb"`
+	Ambb5 float64 `json:"ambb5"`
+	Ww6   float64 `json:"ww6"`
+	Ww7   float64 `json:"ww7"`
 }
 
-type User struct {
-	ID   string `json:"id"`
+type Bigmome struct {
+	Buy2 float64 `json:"BUY2"`
+	Buy1 float64 `json:"BUY1"`
+	Ambi float64 `json:"ambi"`
+}
+
+type Data struct {
+	Hcl     *Hcl     `json:"hcl"`
+	Formula *Formula `json:"formula"`
+	Ai      *Ai      `json:"ai"`
+}
+
+type Formula struct {
+	Rsi       float64 `json:"rsi"`
+	RsiK      float64 `json:"rsiK"`
+	RsiD      float64 `json:"rsiD"`
+	Aroonu    float64 `json:"aroonu"`
+	Aroond    float64 `json:"aroond"`
+	Macd      float64 `json:"macd"`
+	Histogram float64 `json:"histogram"`
+}
+
+type Hcl struct {
+	Opentime float64 `json:"opentime"`
+	Open     float64 `json:"Open"`
+	High     float64 `json:"High"`
+	Low      float64 `json:"Low"`
+	Close    float64 `json:"Close"`
+	Volume   float64 `json:"Volume"`
+}
+
+type Other struct {
+	Amo     float64 `json:"amo"`
+	Amo1    float64 `json:"amo1"`
+	Buysell float64 `json:"BUYSELL"`
+}
+
+type Sell struct {
+	Amb0  float64 `json:"amb0"`
+	Amb1  float64 `json:"amb1"`
+	Amb2  float64 `json:"amb2"`
+	Amb3  float64 `json:"amb3"`
+	Amb99 float64 `json:"amb99"`
+}
+
+type Smallmome struct {
+	Amo float64 `json:"amo"`
+	Ci  float64 `json:"ci"`
+}
+
+type Crypto struct {
 	Name string `json:"name"`
+	Time string `json:"time"`
+	Data *Data  `json:"data"`
+}
+
+type Mome struct {
+	Amb14 float64 `json:"amb14"`
+	Amb15 float64 `json:"amb15"`
+	Amb13 float64 `json:"amb13"`
+	Amb55 float64 `json:"amb55"`
 }

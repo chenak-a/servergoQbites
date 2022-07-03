@@ -2,27 +2,74 @@
 #
 # https://gqlgen.com/getting-started/
 
-type Todo {
-  id: ID!
-  text: String!
-  done: Boolean!
-  user: User!
+type crypto {
+	name: String!
+	time: String!
+	data: Data!
 }
-
-type User {
-  id: ID!
-  name: String!
+type Data {
+	hcl: HCL!
+	formula: Formula!
+	ai: Ai!
 }
-
+type HCL {
+	opentime: Float!
+	Open: Float!
+	High: Float!
+	Low: Float!
+	Close: Float!
+	Volume: Float!
+}
+type Formula {
+	rsi: Float!
+	rsiK: Float!
+	rsiD: Float!
+	aroonu: Float!
+	aroond: Float!
+	macd: Float!
+	histogram: Float!
+}
+type Ai {
+	bigmome: Bigmome!
+	sell: Sell!
+	smallmome: Smallmome!
+	buy: BUY!
+	mome: mome!
+	other: Other!
+}
+type Bigmome {
+	BUY2: Float!
+	BUY1: Float!
+	ambi: Float!
+}
+type Sell {
+	amb0: Float!
+	amb1: Float!
+	amb2: Float!
+	amb3: Float!
+	amb99: Float!
+}
+type Smallmome {
+	amo: Float!
+	ci: Float!
+}
+type BUY {
+	ambb: Float!
+	ambb5: Float!
+	ww6: Float!
+	ww7: Float!
+}
+type mome {
+	amb14: Float!
+	amb15: Float!
+	amb13: Float!
+	amb55: Float!
+}
+type Other {
+	amo: Float!
+	amo1: Float!
+	BUYSELL: Float!
+}
 type Query {
-  todos: [Todo!]!
-}
-
-input NewTodo {
-  text: String!
-  userId: String!
-}
-
-type Mutation {
-  createTodo(input: NewTodo!): Todo!
+  crypto(name: String!): crypto!
 }
