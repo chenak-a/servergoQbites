@@ -69,9 +69,9 @@ type Smallmome struct {
 }
 
 type Crypto struct {
-	Name string `json:"name"`
-	Time string `json:"time"`
-	Data *Data  `json:"data"`
+	Name string  `json:"name"`
+	Time string  `json:"time"`
+	Data []*Data `json:"data"`
 }
 
 type Mome struct {

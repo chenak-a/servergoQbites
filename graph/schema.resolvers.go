@@ -11,7 +11,7 @@ import (
 	"github.com/chenak/hackernews/graph/model"
 )
 
-func (r *queryResolver) Crypto(ctx context.Context, name string) ([]*model.Crypto, error) {
+func (r *queryResolver) Crypto(ctx context.Context, name string) (*model.Crypto, error) {
 	return database.Data(name), nil
 }
 

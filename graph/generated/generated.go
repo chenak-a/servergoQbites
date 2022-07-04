@@ -128,7 +128,7 @@ type ComplexityRoot struct {
 }
 
 type QueryResolver interface {
-	Crypto(ctx context.Context, name string) ([]*model.Crypto, error)
+	Crypto(ctx context.Context, name string) (*model.Crypto, error)
 }
 
 type executableSchema struct {
@@ -539,7 +539,7 @@ var sources = []*ast.Source{
 type crypto {
 	name: String!
 	time: String!
-	data: Data!
+	data: [Data!]!
 }
 type Data {
 	hcl: HCL!
@@ -605,7 +605,7 @@ type Other {
 	BUYSELL: Float!
 }
 type Query {
-  crypto(name: String!): [crypto!]!
+  crypto(name: String!): crypto!
 }
 `, BuiltIn: false},
 }
@@ -2215,9 +2215,9 @@ func (ec *executionContext) _Query_crypto(ctx context.Context, field graphql.Col
 		}
 		return graphql.Null
 	}
-	res := resTmp.([]*model.Crypto)
+	res := resTmp.(*model.Crypto)
 	fc.Result = res
-	return ec.marshalNcrypto2ᚕᚖgithubᚗcomᚋchenakᚋhackernewsᚋgraphᚋmodelᚐCryptoᚄ(ctx, field.Selections, res)
+	return ec.marshalNcrypto2ᚖgithubᚗcomᚋchenakᚋhackernewsᚋgraphᚋmodelᚐCrypto(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Query_crypto(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -4572,9 +4572,9 @@ func (ec *executionContext) _crypto_data(ctx context.Context, field graphql.Coll
 		}
 		return graphql.Null
 	}
-	res := resTmp.(*model.Data)
+	res := resTmp.([]*model.Data)
 	fc.Result = res
-	return ec.marshalNData2ᚖgithubᚗcomᚋchenakᚋhackernewsᚋgraphᚋmodelᚐData(ctx, field.Selections, res)
+	return ec.marshalNData2ᚕᚖgithubᚗcomᚋchenakᚋhackernewsᚋgraphᚋmodelᚐDataᚄ(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_crypto_data(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -5767,6 +5767,50 @@ func (ec *executionContext) marshalNBoolean2bool(ctx context.Context, sel ast.Se
 	return res
 }
 
+func (ec *executionContext) marshalNData2ᚕᚖgithubᚗcomᚋchenakᚋhackernewsᚋgraphᚋmodelᚐDataᚄ(ctx context.Context, sel ast.SelectionSet, v []*model.Data) graphql.Marshaler {
+	ret := make(graphql.Array, len(v))
+	var wg sync.WaitGroup
+	isLen1 := len(v) == 1
+	if !isLen1 {
+		wg.Add(len(v))
+	}
+	for i := range v {
+		i := i
+		fc := &graphql.FieldContext{
+			Index:  &i,
+			Result: &v[i],
+		}
+		ctx := graphql.WithFieldContext(ctx, fc)
+		f := func(i int) {
+			defer func() {
+				if r := recover(); r != nil {
+					ec.Error(ctx, ec.Recover(ctx, r))
+					ret = nil
+				}
+			}()
+			if !isLen1 {
+				defer wg.Done()
+			}
+			ret[i] = ec.marshalNData2ᚖgithubᚗcomᚋchenakᚋhackernewsᚋgraphᚋmodelᚐData(ctx, sel, v[i])
+		}
+		if isLen1 {
+			f(i)
+		} else {
+			go f(i)
+		}
+
+	}
+	wg.Wait()
+
+	for _, e := range ret {
+		if e == graphql.Null {
+			return graphql.Null
+		}
+	}
+
+	return ret
+}
+
 func (ec *executionContext) marshalNData2ᚖgithubᚗcomᚋchenakᚋhackernewsᚋgraphᚋmodelᚐData(ctx context.Context, sel ast.SelectionSet, v *model.Data) graphql.Marshaler {
 	if v == nil {
 		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
@@ -6110,48 +6154,8 @@ func (ec *executionContext) marshalN__TypeKind2string(ctx context.Context, sel a
 	return res
 }
 
-func (ec *executionContext) marshalNcrypto2ᚕᚖgithubᚗcomᚋchenakᚋhackernewsᚋgraphᚋmodelᚐCryptoᚄ(ctx context.Context, sel ast.SelectionSet, v []*model.Crypto) graphql.Marshaler {
-	ret := make(graphql.Array, len(v))
-	var wg sync.WaitGroup
-	isLen1 := len(v) == 1
-	if !isLen1 {
-		wg.Add(len(v))
-	}
-	for i := range v {
-		i := i
-		fc := &graphql.FieldContext{
-			Index:  &i,
-			Result: &v[i],
-		}
-		ctx := graphql.WithFieldContext(ctx, fc)
-		f := func(i int) {
-			defer func() {
-				if r := recover(); r != nil {
-					ec.Error(ctx, ec.Recover(ctx, r))
-					ret = nil
-				}
-			}()
-			if !isLen1 {
-				defer wg.Done()
-			}
-			ret[i] = ec.marshalNcrypto2ᚖgithubᚗcomᚋchenakᚋhackernewsᚋgraphᚋmodelᚐCrypto(ctx, sel, v[i])
-		}
-		if isLen1 {
-			f(i)
-		} else {
-			go f(i)
-		}
-
-	}
-	wg.Wait()
-
-	for _, e := range ret {
-		if e == graphql.Null {
-			return graphql.Null
-		}
-	}
-
-	return ret
+func (ec *executionContext) marshalNcrypto2githubᚗcomᚋchenakᚋhackernewsᚋgraphᚋmodelᚐCrypto(ctx context.Context, sel ast.SelectionSet, v model.Crypto) graphql.Marshaler {
+	return ec._crypto(ctx, sel, &v)
 }
 
 func (ec *executionContext) marshalNcrypto2ᚖgithubᚗcomᚋchenakᚋhackernewsᚋgraphᚋmodelᚐCrypto(ctx context.Context, sel ast.SelectionSet, v *model.Crypto) graphql.Marshaler {

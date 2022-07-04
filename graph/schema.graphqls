@@ -5,7 +5,7 @@
 type crypto {
 	name: String!
 	time: String!
-	data: Data!
+	data: [Data!]!
 }
 type Data {
 	hcl: HCL!
@@ -71,5 +71,5 @@ type Other {
 	BUYSELL: Float!
 }
 type Query {
-  crypto(name: String!): [crypto!]!
+  crypto(name: String!): crypto!
 }
