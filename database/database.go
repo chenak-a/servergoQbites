@@ -62,3 +62,14 @@ func User(name string) *model.User {
 	}
 	return &model.User{Nameuser: nameuser, Balance: modeuser}
 }
+func ListCrypto() []string {
+	client, ctx := connect()
+	namefilterlist, _ := client.Database("cryptoDatabase").Collection("datastore").Find(ctx, bson.M{})
+	var list []string
+	for namefilterlist.Next(ctx) {
+		var episode bson.M
+		namefilterlist.Decode(&episode)
+		list = append(list, episode["name"].(string))
+	}
+	return list
+}

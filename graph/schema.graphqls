@@ -92,4 +92,5 @@ type balance {
 type Query {
   	crypto(name: String!): crypto!
 	User(nameuser: String!): User!
+	Allcrypto: [String!]!
 }
