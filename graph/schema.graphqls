@@ -5,12 +5,20 @@
 type crypto {
 	name: String!
 	time: String!
+	projection: Float!
+	gainlose: GainLoss!
 	data: [Data!]!
+
 }
 type Data {
 	hcl: HCL!
 	formula: Formula!
 	ai: Ai!
+}
+type GainLoss{
+	M: Float!
+	W: Float!
+	D: Float!
 }
 type HCL {
 	opentime: Float!
@@ -69,7 +77,19 @@ type Other {
 	amo: Float!
 	amo1: Float!
 	BUYSELL: Float!
+	BUYSELLevel: String!
 }
+type User {
+	nameuser: String!
+	balance:[balance!]!
+	
+}
+type balance {
+	cryptoName: String!
+	totale: Float!
+}
+
 type Query {
-  crypto(name: String!): crypto!
+  	crypto(name: String!): crypto!
+	User(nameuser: String!): User!
 }

@@ -40,6 +40,12 @@ type Formula struct {
 	Histogram float64 `json:"histogram"`
 }
 
+type GainLoss struct {
+	M float64 `json:"M"`
+	W float64 `json:"W"`
+	D float64 `json:"D"`
+}
+
 type Hcl struct {
 	Opentime float64 `json:"opentime"`
 	Open     float64 `json:"Open"`
@@ -50,9 +56,10 @@ type Hcl struct {
 }
 
 type Other struct {
-	Amo     float64 `json:"amo"`
-	Amo1    float64 `json:"amo1"`
-	Buysell float64 `json:"BUYSELL"`
+	Amo         float64 `json:"amo"`
+	Amo1        float64 `json:"amo1"`
+	Buysell     float64 `json:"BUYSELL"`
+	BUYSELLevel string  `json:"BUYSELLevel"`
 }
 
 type Sell struct {
@@ -68,10 +75,22 @@ type Smallmome struct {
 	Ci  float64 `json:"ci"`
 }
 
+type User struct {
+	Nameuser string     `json:"nameuser"`
+	Balance  []*Balance `json:"balance"`
+}
+
+type Balance struct {
+	CryptoName string  `json:"cryptoName"`
+	Totale     float64 `json:"totale"`
+}
+
 type Crypto struct {
-	Name string  `json:"name"`
-	Time string  `json:"time"`
-	Data []*Data `json:"data"`
+	Name       string    `json:"name"`
+	Time       string    `json:"time"`
+	Projection float64   `json:"projection"`
+	Gainlose   *GainLoss `json:"gainlose"`
+	Data       []*Data   `json:"data"`
 }
 
 type Mome struct {

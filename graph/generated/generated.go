@@ -81,6 +81,12 @@ type ComplexityRoot struct {
 		RsiK      func(childComplexity int) int
 	}
 
+	GainLoss struct {
+		D func(childComplexity int) int
+		M func(childComplexity int) int
+		W func(childComplexity int) int
+	}
+
 	HCL struct {
 		Close    func(childComplexity int) int
 		High     func(childComplexity int) int
@@ -91,13 +97,15 @@ type ComplexityRoot struct {
 	}
 
 	Other struct {
-		Amo     func(childComplexity int) int
-		Amo1    func(childComplexity int) int
-		Buysell func(childComplexity int) int
+		Amo         func(childComplexity int) int
+		Amo1        func(childComplexity int) int
+		BUYSELLevel func(childComplexity int) int
+		Buysell     func(childComplexity int) int
 	}
 
 	Query struct {
 		Crypto func(childComplexity int, name string) int
+		User   func(childComplexity int, nameuser string) int
 	}
 
 	Sell struct {
@@ -113,10 +121,22 @@ type ComplexityRoot struct {
 		Ci  func(childComplexity int) int
 	}
 
+	User struct {
+		Balance  func(childComplexity int) int
+		Nameuser func(childComplexity int) int
+	}
+
+	Balance struct {
+		CryptoName func(childComplexity int) int
+		Totale     func(childComplexity int) int
+	}
+
 	Crypto struct {
-		Data func(childComplexity int) int
-		Name func(childComplexity int) int
-		Time func(childComplexity int) int
+		Data       func(childComplexity int) int
+		Gainlose   func(childComplexity int) int
+		Name       func(childComplexity int) int
+		Projection func(childComplexity int) int
+		Time       func(childComplexity int) int
 	}
 
 	Mome struct {
@@ -129,6 +149,7 @@ type ComplexityRoot struct {
 
 type QueryResolver interface {
 	Crypto(ctx context.Context, name string) (*model.Crypto, error)
+	User(ctx context.Context, nameuser string) (*model.User, error)
 }
 
 type executableSchema struct {
@@ -307,6 +328,27 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Formula.RsiK(childComplexity), true
 
+	case "GainLoss.D":
+		if e.complexity.GainLoss.D == nil {
+			break
+		}
+
+		return e.complexity.GainLoss.D(childComplexity), true
+
+	case "GainLoss.M":
+		if e.complexity.GainLoss.M == nil {
+			break
+		}
+
+		return e.complexity.GainLoss.M(childComplexity), true
+
+	case "GainLoss.W":
+		if e.complexity.GainLoss.W == nil {
+			break
+		}
+
+		return e.complexity.GainLoss.W(childComplexity), true
+
 	case "HCL.Close":
 		if e.complexity.HCL.Close == nil {
 			break
@@ -363,6 +405,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Other.Amo1(childComplexity), true
 
+	case "Other.BUYSELLevel":
+		if e.complexity.Other.BUYSELLevel == nil {
+			break
+		}
+
+		return e.complexity.Other.BUYSELLevel(childComplexity), true
+
 	case "Other.BUYSELL":
 		if e.complexity.Other.Buysell == nil {
 			break
@@ -381,6 +430,18 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Query.Crypto(childComplexity, args["name"].(string)), true
+
+	case "Query.User":
+		if e.complexity.Query.User == nil {
+			break
+		}
+
+		args, err := ec.field_Query_User_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Query.User(childComplexity, args["nameuser"].(string)), true
 
 	case "Sell.amb0":
 		if e.complexity.Sell.Amb0 == nil {
@@ -431,6 +492,34 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Smallmome.Ci(childComplexity), true
 
+	case "User.balance":
+		if e.complexity.User.Balance == nil {
+			break
+		}
+
+		return e.complexity.User.Balance(childComplexity), true
+
+	case "User.nameuser":
+		if e.complexity.User.Nameuser == nil {
+			break
+		}
+
+		return e.complexity.User.Nameuser(childComplexity), true
+
+	case "balance.cryptoName":
+		if e.complexity.Balance.CryptoName == nil {
+			break
+		}
+
+		return e.complexity.Balance.CryptoName(childComplexity), true
+
+	case "balance.totale":
+		if e.complexity.Balance.Totale == nil {
+			break
+		}
+
+		return e.complexity.Balance.Totale(childComplexity), true
+
 	case "crypto.data":
 		if e.complexity.Crypto.Data == nil {
 			break
@@ -438,12 +527,26 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Crypto.Data(childComplexity), true
 
+	case "crypto.gainlose":
+		if e.complexity.Crypto.Gainlose == nil {
+			break
+		}
+
+		return e.complexity.Crypto.Gainlose(childComplexity), true
+
 	case "crypto.name":
 		if e.complexity.Crypto.Name == nil {
 			break
 		}
 
 		return e.complexity.Crypto.Name(childComplexity), true
+
+	case "crypto.projection":
+		if e.complexity.Crypto.Projection == nil {
+			break
+		}
+
+		return e.complexity.Crypto.Projection(childComplexity), true
 
 	case "crypto.time":
 		if e.complexity.Crypto.Time == nil {
@@ -539,12 +642,20 @@ var sources = []*ast.Source{
 type crypto {
 	name: String!
 	time: String!
+	projection: Float!
+	gainlose: GainLoss!
 	data: [Data!]!
+
 }
 type Data {
 	hcl: HCL!
 	formula: Formula!
 	ai: Ai!
+}
+type GainLoss{
+	M: Float!
+	W: Float!
+	D: Float!
 }
 type HCL {
 	opentime: Float!
@@ -603,9 +714,21 @@ type Other {
 	amo: Float!
 	amo1: Float!
 	BUYSELL: Float!
+	BUYSELLevel: String!
 }
+type User {
+	nameuser: String!
+	balance:[balance!]!
+	
+}
+type balance {
+	cryptoName: String!
+	totale: Float!
+}
+
 type Query {
-  crypto(name: String!): crypto!
+  	crypto(name: String!): crypto!
+	User(nameuser: String!): User!
 }
 `, BuiltIn: false},
 }
@@ -614,6 +737,21 @@ var parsedSchema = gqlparser.MustLoadSchema(sources...)
 // endregion ************************** generated!.gotpl **************************
 
 // region    ***************************** args.gotpl *****************************
+
+func (ec *executionContext) field_Query_User_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 string
+	if tmp, ok := rawArgs["nameuser"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("nameuser"))
+		arg0, err = ec.unmarshalNString2string(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["nameuser"] = arg0
+	return args, nil
+}
 
 func (ec *executionContext) field_Query___type_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
@@ -994,6 +1132,8 @@ func (ec *executionContext) fieldContext_Ai_other(ctx context.Context, field gra
 				return ec.fieldContext_Other_amo1(ctx, field)
 			case "BUYSELL":
 				return ec.fieldContext_Other_BUYSELL(ctx, field)
+			case "BUYSELLevel":
+				return ec.fieldContext_Other_BUYSELLevel(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Other", field.Name)
 		},
@@ -1793,6 +1933,138 @@ func (ec *executionContext) fieldContext_Formula_histogram(ctx context.Context, 
 	return fc, nil
 }
 
+func (ec *executionContext) _GainLoss_M(ctx context.Context, field graphql.CollectedField, obj *model.GainLoss) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_GainLoss_M(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.M, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(float64)
+	fc.Result = res
+	return ec.marshalNFloat2float64(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_GainLoss_M(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "GainLoss",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Float does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _GainLoss_W(ctx context.Context, field graphql.CollectedField, obj *model.GainLoss) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_GainLoss_W(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.W, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(float64)
+	fc.Result = res
+	return ec.marshalNFloat2float64(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_GainLoss_W(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "GainLoss",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Float does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _GainLoss_D(ctx context.Context, field graphql.CollectedField, obj *model.GainLoss) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_GainLoss_D(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.D, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(float64)
+	fc.Result = res
+	return ec.marshalNFloat2float64(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_GainLoss_D(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "GainLoss",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Float does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
 func (ec *executionContext) _HCL_opentime(ctx context.Context, field graphql.CollectedField, obj *model.Hcl) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_HCL_opentime(ctx, field)
 	if err != nil {
@@ -2189,6 +2461,50 @@ func (ec *executionContext) fieldContext_Other_BUYSELL(ctx context.Context, fiel
 	return fc, nil
 }
 
+func (ec *executionContext) _Other_BUYSELLevel(ctx context.Context, field graphql.CollectedField, obj *model.Other) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Other_BUYSELLevel(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.BUYSELLevel, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Other_BUYSELLevel(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Other",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
 func (ec *executionContext) _Query_crypto(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_Query_crypto(ctx, field)
 	if err != nil {
@@ -2232,6 +2548,10 @@ func (ec *executionContext) fieldContext_Query_crypto(ctx context.Context, field
 				return ec.fieldContext_crypto_name(ctx, field)
 			case "time":
 				return ec.fieldContext_crypto_time(ctx, field)
+			case "projection":
+				return ec.fieldContext_crypto_projection(ctx, field)
+			case "gainlose":
+				return ec.fieldContext_crypto_gainlose(ctx, field)
 			case "data":
 				return ec.fieldContext_crypto_data(ctx, field)
 			}
@@ -2246,6 +2566,67 @@ func (ec *executionContext) fieldContext_Query_crypto(ctx context.Context, field
 	}()
 	ctx = graphql.WithFieldContext(ctx, fc)
 	if fc.Args, err = ec.field_Query_crypto_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Query_User(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Query_User(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Query().User(rctx, fc.Args["nameuser"].(string))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*model.User)
+	fc.Result = res
+	return ec.marshalNUser2ᚖgithubᚗcomᚋchenakᚋhackernewsᚋgraphᚋmodelᚐUser(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Query_User(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Query",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "nameuser":
+				return ec.fieldContext_User_nameuser(ctx, field)
+			case "balance":
+				return ec.fieldContext_User_balance(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type User", field.Name)
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Query_User_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
 		ec.Error(ctx, err)
 		return
 	}
@@ -2684,6 +3065,100 @@ func (ec *executionContext) fieldContext_Smallmome_ci(ctx context.Context, field
 		IsResolver: false,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
 			return nil, errors.New("field of type Float does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _User_nameuser(ctx context.Context, field graphql.CollectedField, obj *model.User) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_User_nameuser(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Nameuser, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_User_nameuser(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "User",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _User_balance(ctx context.Context, field graphql.CollectedField, obj *model.User) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_User_balance(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Balance, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.([]*model.Balance)
+	fc.Result = res
+	return ec.marshalNbalance2ᚕᚖgithubᚗcomᚋchenakᚋhackernewsᚋgraphᚋmodelᚐBalanceᚄ(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_User_balance(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "User",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "cryptoName":
+				return ec.fieldContext_balance_cryptoName(ctx, field)
+			case "totale":
+				return ec.fieldContext_balance_totale(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type balance", field.Name)
 		},
 	}
 	return fc, nil
@@ -4458,6 +4933,94 @@ func (ec *executionContext) fieldContext___Type_specifiedByURL(ctx context.Conte
 	return fc, nil
 }
 
+func (ec *executionContext) _balance_cryptoName(ctx context.Context, field graphql.CollectedField, obj *model.Balance) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_balance_cryptoName(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.CryptoName, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_balance_cryptoName(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "balance",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _balance_totale(ctx context.Context, field graphql.CollectedField, obj *model.Balance) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_balance_totale(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Totale, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(float64)
+	fc.Result = res
+	return ec.marshalNFloat2float64(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_balance_totale(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "balance",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Float does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
 func (ec *executionContext) _crypto_name(ctx context.Context, field graphql.CollectedField, obj *model.Crypto) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_crypto_name(ctx, field)
 	if err != nil {
@@ -4541,6 +5104,102 @@ func (ec *executionContext) fieldContext_crypto_time(ctx context.Context, field 
 		IsResolver: false,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
 			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _crypto_projection(ctx context.Context, field graphql.CollectedField, obj *model.Crypto) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_crypto_projection(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Projection, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(float64)
+	fc.Result = res
+	return ec.marshalNFloat2float64(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_crypto_projection(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "crypto",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Float does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _crypto_gainlose(ctx context.Context, field graphql.CollectedField, obj *model.Crypto) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_crypto_gainlose(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Gainlose, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*model.GainLoss)
+	fc.Result = res
+	return ec.marshalNGainLoss2ᚖgithubᚗcomᚋchenakᚋhackernewsᚋgraphᚋmodelᚐGainLoss(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_crypto_gainlose(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "crypto",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "M":
+				return ec.fieldContext_GainLoss_M(ctx, field)
+			case "W":
+				return ec.fieldContext_GainLoss_W(ctx, field)
+			case "D":
+				return ec.fieldContext_GainLoss_D(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type GainLoss", field.Name)
 		},
 	}
 	return fc, nil
@@ -5052,6 +5711,48 @@ func (ec *executionContext) _Formula(ctx context.Context, sel ast.SelectionSet, 
 	return out
 }
 
+var gainLossImplementors = []string{"GainLoss"}
+
+func (ec *executionContext) _GainLoss(ctx context.Context, sel ast.SelectionSet, obj *model.GainLoss) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, gainLossImplementors)
+	out := graphql.NewFieldSet(fields)
+	var invalids uint32
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("GainLoss")
+		case "M":
+
+			out.Values[i] = ec._GainLoss_M(ctx, field, obj)
+
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "W":
+
+			out.Values[i] = ec._GainLoss_W(ctx, field, obj)
+
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "D":
+
+			out.Values[i] = ec._GainLoss_D(ctx, field, obj)
+
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch()
+	if invalids > 0 {
+		return graphql.Null
+	}
+	return out
+}
+
 var hCLImplementors = []string{"HCL"}
 
 func (ec *executionContext) _HCL(ctx context.Context, sel ast.SelectionSet, obj *model.Hcl) graphql.Marshaler {
@@ -5146,6 +5847,13 @@ func (ec *executionContext) _Other(ctx context.Context, sel ast.SelectionSet, ob
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
+		case "BUYSELLevel":
+
+			out.Values[i] = ec._Other_BUYSELLevel(ctx, field, obj)
+
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
@@ -5186,6 +5894,29 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 					}
 				}()
 				res = ec._Query_crypto(ctx, field)
+				if res == graphql.Null {
+					atomic.AddUint32(&invalids, 1)
+				}
+				return res
+			}
+
+			rrm := func(ctx context.Context) graphql.Marshaler {
+				return ec.OperationContext.RootResolverMiddleware(ctx, innerFunc)
+			}
+
+			out.Concurrently(i, func() graphql.Marshaler {
+				return rrm(innerCtx)
+			})
+		case "User":
+			field := field
+
+			innerFunc := func(ctx context.Context) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Query_User(ctx, field)
 				if res == graphql.Null {
 					atomic.AddUint32(&invalids, 1)
 				}
@@ -5298,6 +6029,41 @@ func (ec *executionContext) _Smallmome(ctx context.Context, sel ast.SelectionSet
 		case "ci":
 
 			out.Values[i] = ec._Smallmome_ci(ctx, field, obj)
+
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch()
+	if invalids > 0 {
+		return graphql.Null
+	}
+	return out
+}
+
+var userImplementors = []string{"User"}
+
+func (ec *executionContext) _User(ctx context.Context, sel ast.SelectionSet, obj *model.User) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, userImplementors)
+	out := graphql.NewFieldSet(fields)
+	var invalids uint32
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("User")
+		case "nameuser":
+
+			out.Values[i] = ec._User_nameuser(ctx, field, obj)
+
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "balance":
+
+			out.Values[i] = ec._User_balance(ctx, field, obj)
 
 			if out.Values[i] == graphql.Null {
 				invalids++
@@ -5627,6 +6393,41 @@ func (ec *executionContext) ___Type(ctx context.Context, sel ast.SelectionSet, o
 	return out
 }
 
+var balanceImplementors = []string{"balance"}
+
+func (ec *executionContext) _balance(ctx context.Context, sel ast.SelectionSet, obj *model.Balance) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, balanceImplementors)
+	out := graphql.NewFieldSet(fields)
+	var invalids uint32
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("balance")
+		case "cryptoName":
+
+			out.Values[i] = ec._balance_cryptoName(ctx, field, obj)
+
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "totale":
+
+			out.Values[i] = ec._balance_totale(ctx, field, obj)
+
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch()
+	if invalids > 0 {
+		return graphql.Null
+	}
+	return out
+}
+
 var cryptoImplementors = []string{"crypto"}
 
 func (ec *executionContext) _crypto(ctx context.Context, sel ast.SelectionSet, obj *model.Crypto) graphql.Marshaler {
@@ -5647,6 +6448,20 @@ func (ec *executionContext) _crypto(ctx context.Context, sel ast.SelectionSet, o
 		case "time":
 
 			out.Values[i] = ec._crypto_time(ctx, field, obj)
+
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "projection":
+
+			out.Values[i] = ec._crypto_projection(ctx, field, obj)
+
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "gainlose":
+
+			out.Values[i] = ec._crypto_gainlose(ctx, field, obj)
 
 			if out.Values[i] == graphql.Null {
 				invalids++
@@ -5846,6 +6661,16 @@ func (ec *executionContext) marshalNFormula2ᚖgithubᚗcomᚋchenakᚋhackernew
 	return ec._Formula(ctx, sel, v)
 }
 
+func (ec *executionContext) marshalNGainLoss2ᚖgithubᚗcomᚋchenakᚋhackernewsᚋgraphᚋmodelᚐGainLoss(ctx context.Context, sel ast.SelectionSet, v *model.GainLoss) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
+		}
+		return graphql.Null
+	}
+	return ec._GainLoss(ctx, sel, v)
+}
+
 func (ec *executionContext) marshalNHCL2ᚖgithubᚗcomᚋchenakᚋhackernewsᚋgraphᚋmodelᚐHcl(ctx context.Context, sel ast.SelectionSet, v *model.Hcl) graphql.Marshaler {
 	if v == nil {
 		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
@@ -5899,6 +6724,20 @@ func (ec *executionContext) marshalNString2string(ctx context.Context, sel ast.S
 		}
 	}
 	return res
+}
+
+func (ec *executionContext) marshalNUser2githubᚗcomᚋchenakᚋhackernewsᚋgraphᚋmodelᚐUser(ctx context.Context, sel ast.SelectionSet, v model.User) graphql.Marshaler {
+	return ec._User(ctx, sel, &v)
+}
+
+func (ec *executionContext) marshalNUser2ᚖgithubᚗcomᚋchenakᚋhackernewsᚋgraphᚋmodelᚐUser(ctx context.Context, sel ast.SelectionSet, v *model.User) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
+		}
+		return graphql.Null
+	}
+	return ec._User(ctx, sel, v)
 }
 
 func (ec *executionContext) marshalN__Directive2githubᚗcomᚋ99designsᚋgqlgenᚋgraphqlᚋintrospectionᚐDirective(ctx context.Context, sel ast.SelectionSet, v introspection.Directive) graphql.Marshaler {
@@ -6152,6 +6991,60 @@ func (ec *executionContext) marshalN__TypeKind2string(ctx context.Context, sel a
 		}
 	}
 	return res
+}
+
+func (ec *executionContext) marshalNbalance2ᚕᚖgithubᚗcomᚋchenakᚋhackernewsᚋgraphᚋmodelᚐBalanceᚄ(ctx context.Context, sel ast.SelectionSet, v []*model.Balance) graphql.Marshaler {
+	ret := make(graphql.Array, len(v))
+	var wg sync.WaitGroup
+	isLen1 := len(v) == 1
+	if !isLen1 {
+		wg.Add(len(v))
+	}
+	for i := range v {
+		i := i
+		fc := &graphql.FieldContext{
+			Index:  &i,
+			Result: &v[i],
+		}
+		ctx := graphql.WithFieldContext(ctx, fc)
+		f := func(i int) {
+			defer func() {
+				if r := recover(); r != nil {
+					ec.Error(ctx, ec.Recover(ctx, r))
+					ret = nil
+				}
+			}()
+			if !isLen1 {
+				defer wg.Done()
+			}
+			ret[i] = ec.marshalNbalance2ᚖgithubᚗcomᚋchenakᚋhackernewsᚋgraphᚋmodelᚐBalance(ctx, sel, v[i])
+		}
+		if isLen1 {
+			f(i)
+		} else {
+			go f(i)
+		}
+
+	}
+	wg.Wait()
+
+	for _, e := range ret {
+		if e == graphql.Null {
+			return graphql.Null
+		}
+	}
+
+	return ret
+}
+
+func (ec *executionContext) marshalNbalance2ᚖgithubᚗcomᚋchenakᚋhackernewsᚋgraphᚋmodelᚐBalance(ctx context.Context, sel ast.SelectionSet, v *model.Balance) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
+		}
+		return graphql.Null
+	}
+	return ec._balance(ctx, sel, v)
 }
 
 func (ec *executionContext) marshalNcrypto2githubᚗcomᚋchenakᚋhackernewsᚋgraphᚋmodelᚐCrypto(ctx context.Context, sel ast.SelectionSet, v model.Crypto) graphql.Marshaler {

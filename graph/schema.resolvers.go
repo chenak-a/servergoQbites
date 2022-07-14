@@ -15,6 +15,10 @@ func (r *queryResolver) Crypto(ctx context.Context, name string) (*model.Crypto,
 	return database.Data(name), nil
 }
 
+func (r *queryResolver) User(ctx context.Context, nameuser string) (*model.User, error) {
+	return database.User(nameuser), nil
+}
+
 // Query returns generated.QueryResolver implementation.
 func (r *Resolver) Query() generated.QueryResolver { return &queryResolver{r} }
 
