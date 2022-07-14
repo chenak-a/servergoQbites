@@ -13,7 +13,11 @@ import (
 
 func connect() (*mongo.Client, context.Context) {
 	ctx, _ := context.WithTimeout(context.Background(), 10*time.Second)
-	client, _ := mongo.Connect(ctx, options.Client().ApplyURI("mongodb://localhost:27017"))
+	client, err := mongo.Connect(ctx, options.Client().ApplyURI("mongodb://localhost:27017"))
+	if err != nil {
+		panic(err)
+	}
+
 	return client, ctx
 }
 func Data(namecrypto string) *model.Crypto {
@@ -45,7 +49,7 @@ func Data(namecrypto string) *model.Crypto {
 
 		modl = append(modl, dummyLink)
 	}
-
+	defer client.Disconnect(ctx)
 	return &model.Crypto{Name: name, Time: time, Projection: Projection, Gainlose: &model.GainLoss{M: gainlose1M, D: gainlose24h, W: gainlose1w}, Data: modl}
 
 }
@@ -60,6 +64,7 @@ func User(name string) *model.User {
 		balancetype := &model.Balance{CryptoName: key, Totale: value.(float64)}
 		modeuser = append(modeuser, balancetype)
 	}
+	defer client.Disconnect(ctx)
 	return &model.User{Nameuser: nameuser, Balance: modeuser}
 }
 func ListCrypto() []string {
@@ -71,5 +76,6 @@ func ListCrypto() []string {
 		namefilterlist.Decode(&episode)
 		list = append(list, episode["name"].(string))
 	}
+	defer client.Disconnect(ctx)
 	return list
 }
