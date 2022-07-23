@@ -1,4 +1,4 @@
-#  CryptoStoreAI (DEMO)
+#  servergoQbites
 [![Go](https://img.shields.io/badge/--00ADD8?logo=go&logoColor=ffffff)](https://golang.org/)
 [![BitCoin](https://badgen.net/badge/icon/bitcoin?icon=bitcoin&label)](https://bitcoin.org)
 
