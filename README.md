@@ -22,7 +22,7 @@ query{
 }
 ```
 ### get data of specific crypto 
-```javascript
+```go
 query{
     crypto(name: $name){
       name
@@ -104,7 +104,7 @@ query{
   }
 ```
 ### get user data
-```javascript
+```go
 query{
   User(nameuser: $nameuser) {
       nameuser
