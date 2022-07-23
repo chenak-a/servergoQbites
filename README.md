@@ -15,7 +15,7 @@ go run server.go
 ```
 
 ## :building_construction: Usage
-### get list of crypto that are in the database
+### get list of all crypto coin in the database
 ```javascript
 query{
   Allcrypto
