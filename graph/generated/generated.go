@@ -141,10 +141,14 @@ type ComplexityRoot struct {
 	}
 
 	Mome struct {
-		Amb13 func(childComplexity int) int
-		Amb14 func(childComplexity int) int
-		Amb15 func(childComplexity int) int
-		Amb55 func(childComplexity int) int
+		Amb13  func(childComplexity int) int
+		Amb13p func(childComplexity int) int
+		Amb14  func(childComplexity int) int
+		Amb14p func(childComplexity int) int
+		Amb15  func(childComplexity int) int
+		Amb15p func(childComplexity int) int
+		Amb55  func(childComplexity int) int
+		Amb55p func(childComplexity int) int
 	}
 }
 
@@ -571,12 +575,26 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Mome.Amb13(childComplexity), true
 
+	case "mome.amb13p":
+		if e.complexity.Mome.Amb13p == nil {
+			break
+		}
+
+		return e.complexity.Mome.Amb13p(childComplexity), true
+
 	case "mome.amb14":
 		if e.complexity.Mome.Amb14 == nil {
 			break
 		}
 
 		return e.complexity.Mome.Amb14(childComplexity), true
+
+	case "mome.amb14p":
+		if e.complexity.Mome.Amb14p == nil {
+			break
+		}
+
+		return e.complexity.Mome.Amb14p(childComplexity), true
 
 	case "mome.amb15":
 		if e.complexity.Mome.Amb15 == nil {
@@ -585,12 +603,26 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Mome.Amb15(childComplexity), true
 
+	case "mome.amb15p":
+		if e.complexity.Mome.Amb15p == nil {
+			break
+		}
+
+		return e.complexity.Mome.Amb15p(childComplexity), true
+
 	case "mome.amb55":
 		if e.complexity.Mome.Amb55 == nil {
 			break
 		}
 
 		return e.complexity.Mome.Amb55(childComplexity), true
+
+	case "mome.amb55p":
+		if e.complexity.Mome.Amb55p == nil {
+			break
+		}
+
+		return e.complexity.Mome.Amb55p(childComplexity), true
 
 	}
 	return 0, false
@@ -718,6 +750,10 @@ type mome {
 	amb15: Float!
 	amb13: Float!
 	amb55: Float!
+	amb14p: Float!
+	amb15p: Float!
+	amb13p: Float!
+	amb55p: Float!
 }
 type Other {
 	amo: Float!
@@ -1090,6 +1126,14 @@ func (ec *executionContext) fieldContext_Ai_mome(ctx context.Context, field grap
 				return ec.fieldContext_mome_amb13(ctx, field)
 			case "amb55":
 				return ec.fieldContext_mome_amb55(ctx, field)
+			case "amb14p":
+				return ec.fieldContext_mome_amb14p(ctx, field)
+			case "amb15p":
+				return ec.fieldContext_mome_amb15p(ctx, field)
+			case "amb13p":
+				return ec.fieldContext_mome_amb13p(ctx, field)
+			case "amb55p":
+				return ec.fieldContext_mome_amb55p(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type mome", field.Name)
 		},
@@ -5487,6 +5531,182 @@ func (ec *executionContext) fieldContext_mome_amb55(ctx context.Context, field g
 	return fc, nil
 }
 
+func (ec *executionContext) _mome_amb14p(ctx context.Context, field graphql.CollectedField, obj *model.Mome) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_mome_amb14p(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Amb14p, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(float64)
+	fc.Result = res
+	return ec.marshalNFloat2float64(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_mome_amb14p(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "mome",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Float does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _mome_amb15p(ctx context.Context, field graphql.CollectedField, obj *model.Mome) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_mome_amb15p(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Amb15p, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(float64)
+	fc.Result = res
+	return ec.marshalNFloat2float64(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_mome_amb15p(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "mome",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Float does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _mome_amb13p(ctx context.Context, field graphql.CollectedField, obj *model.Mome) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_mome_amb13p(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Amb13p, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(float64)
+	fc.Result = res
+	return ec.marshalNFloat2float64(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_mome_amb13p(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "mome",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Float does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _mome_amb55p(ctx context.Context, field graphql.CollectedField, obj *model.Mome) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_mome_amb55p(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Amb55p, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(float64)
+	fc.Result = res
+	return ec.marshalNFloat2float64(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_mome_amb55p(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "mome",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Float does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
 // endregion **************************** field.gotpl *****************************
 
 // region    **************************** input.gotpl *****************************
@@ -6595,6 +6815,34 @@ func (ec *executionContext) _mome(ctx context.Context, sel ast.SelectionSet, obj
 		case "amb55":
 
 			out.Values[i] = ec._mome_amb55(ctx, field, obj)
+
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "amb14p":
+
+			out.Values[i] = ec._mome_amb14p(ctx, field, obj)
+
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "amb15p":
+
+			out.Values[i] = ec._mome_amb15p(ctx, field, obj)
+
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "amb13p":
+
+			out.Values[i] = ec._mome_amb13p(ctx, field, obj)
+
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "amb55p":
+
+			out.Values[i] = ec._mome_amb55p(ctx, field, obj)
 
 			if out.Values[i] == graphql.Null {
 				invalids++

@@ -6,6 +6,7 @@ require (
 	github.com/99designs/gqlgen v0.17.10
 	github.com/vektah/gqlparser/v2 v2.4.5
 	go.mongodb.org/mongo-driver v1.9.1
+	google.golang.org/appengine v1.6.7
 )
 
 require (
@@ -26,7 +27,6 @@ require (
 	golang.org/x/net v0.0.0-20211015210444-4f30a5c0130f // indirect
 	golang.org/x/sync v0.0.0-20210220032951-036812b2e83c // indirect
 	golang.org/x/text v0.3.7 // indirect
-	google.golang.org/appengine v1.6.7 // indirect
 	google.golang.org/protobuf v1.28.0 // indirect
 
 )

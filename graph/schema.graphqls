@@ -72,6 +72,10 @@ type mome {
 	amb15: Float!
 	amb13: Float!
 	amb55: Float!
+	amb14p: Float!
+	amb15p: Float!
+	amb13p: Float!
+	amb55p: Float!
 }
 type Other {
 	amo: Float!

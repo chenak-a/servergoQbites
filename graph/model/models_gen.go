@@ -94,8 +94,12 @@ type Crypto struct {
 }
 
 type Mome struct {
-	Amb14 float64 `json:"amb14"`
-	Amb15 float64 `json:"amb15"`
-	Amb13 float64 `json:"amb13"`
-	Amb55 float64 `json:"amb55"`
+	Amb14  float64 `json:"amb14"`
+	Amb15  float64 `json:"amb15"`
+	Amb13  float64 `json:"amb13"`
+	Amb55  float64 `json:"amb55"`
+	Amb14p float64 `json:"amb14p"`
+	Amb15p float64 `json:"amb15p"`
+	Amb13p float64 `json:"amb13p"`
+	Amb55p float64 `json:"amb55p"`
 }

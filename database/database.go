@@ -2,6 +2,7 @@ package database
 
 import (
 	"context"
+	"os"
 	"time"
 
 	"github.com/chenak/hackernews/graph/model"
@@ -11,9 +12,29 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
+// asFloat safely extracts a float64 from a bson value, returning 0 when the
+// field is absent or not numeric (keeps resolvers from panicking during data
+// migrations that add new columns).
+func asFloat(v interface{}) float64 {
+	switch n := v.(type) {
+	case float64:
+		return n
+	case int64:
+		return float64(n)
+	case int32:
+		return float64(n)
+	default:
+		return 0
+	}
+}
+
 func connect() (*mongo.Client, context.Context) {
 	ctx, _ := context.WithTimeout(context.Background(), 10*time.Second)
-	client, err := mongo.Connect(ctx, options.Client().ApplyURI("mongodb://localhost:27017"))
+	mongoURI := os.Getenv("MONGO_URI")
+	if mongoURI == "" {
+		mongoURI = "mongodb://localhost:27017"
+	}
+	client, err := mongo.Connect(ctx, options.Client().ApplyURI(mongoURI))
 	if err != nil {
 		panic(err)
 	}
@@ -45,7 +66,7 @@ func Data(namecrypto string) *model.Crypto {
 		filter.Decode(&episode)
 		//fmt.Println(episode)
 
-		dummyLink := &model.Data{Hcl: &model.Hcl{Opentime: episode["Close time"].(float64), Open: episode["Open"].(float64), High: episode["High"].(float64), Low: episode["Low"].(float64), Close: episode["Close"].(float64), Volume: episode["Volume"].(float64)}, Formula: &model.Formula{Rsi: episode["rsi"].(float64), RsiK: episode["rsiK"].(float64), RsiD: episode["rsiD"].(float64), Aroonu: episode["aroonu"].(float64), Aroond: episode["aroond"].(float64), Macd: episode["macd"].(float64), Histogram: episode["histogram"].(float64)}, Ai: &model.Ai{Bigmome: &model.Bigmome{Buy2: episode["BUY2"].(float64), Buy1: episode["BUY1"].(float64), Ambi: episode["ambi"].(float64)}, Sell: &model.Sell{Amb0: episode["amb0"].(float64), Amb1: episode["amb1"].(float64), Amb2: episode["amb2"].(float64), Amb3: episode["amb3"].(float64), Amb99: episode["amb99"].(float64)}, Smallmome: &model.Smallmome{Amo: episode["amo"].(float64), Ci: episode["ci"].(float64)}, Buy: &model.Buy{Ambb: episode["ambb"].(float64), Ambb5: episode["ambb5"].(float64), Ww6: episode["ww6"].(float64), Ww7: episode["ww7"].(float64)}, Mome: &model.Mome{Amb14: episode["amb14"].(float64), Amb15: episode["amb15"].(float64), Amb13: episode["amb13"].(float64), Amb55: episode["amb55"].(float64)}, Other: &model.Other{Amo: episode["amo"].(float64), Amo1: episode["amo1"].(float64), Buysell: episode["BUYSELL"].(float64), BUYSELLevel: episode["BUYSELLTYPE"].(string)}}}
+		dummyLink := &model.Data{Hcl: &model.Hcl{Opentime: episode["Close time"].(float64), Open: episode["Open"].(float64), High: episode["High"].(float64), Low: episode["Low"].(float64), Close: episode["Close"].(float64), Volume: episode["Volume"].(float64)}, Formula: &model.Formula{Rsi: episode["rsi"].(float64), RsiK: episode["rsiK"].(float64), RsiD: episode["rsiD"].(float64), Aroonu: episode["aroonu"].(float64), Aroond: episode["aroond"].(float64), Macd: episode["macd"].(float64), Histogram: episode["histogram"].(float64)}, Ai: &model.Ai{Bigmome: &model.Bigmome{Buy2: episode["BUY2"].(float64), Buy1: episode["BUY1"].(float64), Ambi: episode["ambi"].(float64)}, Sell: &model.Sell{Amb0: episode["amb0"].(float64), Amb1: episode["amb1"].(float64), Amb2: episode["amb2"].(float64), Amb3: episode["amb3"].(float64), Amb99: episode["amb99"].(float64)}, Smallmome: &model.Smallmome{Amo: episode["amo"].(float64), Ci: episode["ci"].(float64)}, Buy: &model.Buy{Ambb: episode["ambb"].(float64), Ambb5: episode["ambb5"].(float64), Ww6: episode["ww6"].(float64), Ww7: episode["ww7"].(float64)}, Mome: &model.Mome{Amb14: episode["amb14"].(float64), Amb15: episode["amb15"].(float64), Amb13: episode["amb13"].(float64), Amb55: episode["amb55"].(float64), Amb14p: asFloat(episode["amb14p"]), Amb15p: asFloat(episode["amb15p"]), Amb13p: asFloat(episode["amb13p"]), Amb55p: asFloat(episode["amb55p"])}, Other: &model.Other{Amo: episode["amo"].(float64), Amo1: episode["amo1"].(float64), Buysell: episode["BUYSELL"].(float64), BUYSELLevel: episode["BUYSELLTYPE"].(string)}}}
 
 		modl = append(modl, dummyLink)
 	}
