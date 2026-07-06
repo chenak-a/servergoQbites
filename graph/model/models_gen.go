@@ -62,6 +62,9 @@ type Other struct {
 	BUYSELLevel string  `json:"BUYSELLevel"`
 }
 
+type Query struct {
+}
+
 type Sell struct {
 	Amb0  float64 `json:"amb0"`
 	Amb1  float64 `json:"amb1"`
