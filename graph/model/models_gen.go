@@ -24,6 +24,26 @@ type Bigmome struct {
 	Ambi float64 `json:"ambi"`
 }
 
+type Bot struct {
+	Stance     string    `json:"stance"`
+	BotMult    float64   `json:"botMult"`
+	BhMult     float64   `json:"bhMult"`
+	EmaGapPct  float64   `json:"emaGapPct"`
+	StartIdx   int       `json:"startIdx"`
+	T          []float64 `json:"t"`
+	Close      []float64 `json:"close"`
+	Ema        []float64 `json:"ema"`
+	DeepBreak  []float64 `json:"deepBreak"`
+	InMarket   []float64 `json:"inMarket"`
+	Equity     []float64 `json:"equity"`
+	Hold       []float64 `json:"hold"`
+	Entries    []int     `json:"entries"`
+	Trims      []int     `json:"trims"`
+	Exits      []int     `json:"exits"`
+	SwingBuys  []int     `json:"swingBuys"`
+	SwingSells []int     `json:"swingSells"`
+}
+
 type Data struct {
 	Hcl     *Hcl     `json:"hcl"`
 	Formula *Formula `json:"formula"`

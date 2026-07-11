@@ -28,54 +28,172 @@ func asFloat(v interface{}) float64 {
 	}
 }
 
-func connect() (*mongo.Client, context.Context) {
-	ctx, _ := context.WithTimeout(context.Background(), 10*time.Second)
+// asInt safely extracts an int from a bson value (bar indices).
+func asInt(v interface{}) int {
+	switch n := v.(type) {
+	case int64:
+		return int(n)
+	case int32:
+		return int(n)
+	case float64:
+		return int(n)
+	default:
+		return 0
+	}
+}
+
+func toFloatSlice(v interface{}) []float64 {
+	arr, ok := v.(primitive.A)
+	if !ok {
+		return []float64{}
+	}
+	out := make([]float64, 0, len(arr))
+	for _, e := range arr {
+		out = append(out, asFloat(e))
+	}
+	return out
+}
+
+func toIntSlice(v interface{}) []int {
+	arr, ok := v.(primitive.A)
+	if !ok {
+		return []int{}
+	}
+	out := make([]int, 0, len(arr))
+	for _, e := range arr {
+		out = append(out, asInt(e))
+	}
+	return out
+}
+
+// asString safely extracts a string, returning "" when absent/wrong type.
+func asString(v interface{}) string {
+	if s, ok := v.(string); ok {
+		return s
+	}
+	return ""
+}
+
+// candleFromDoc maps one raw MongoDB candle document to the GraphQL model,
+// tolerating missing/renamed fields (asFloat/asString never panic) so a schema
+// migration on the Python side can't take the API down.
+func candleFromDoc(d bson.M) *model.Data {
+	return &model.Data{
+		Hcl: &model.Hcl{
+			Opentime: asFloat(d["Close time"]), Open: asFloat(d["Open"]),
+			High: asFloat(d["High"]), Low: asFloat(d["Low"]),
+			Close: asFloat(d["Close"]), Volume: asFloat(d["Volume"]),
+		},
+		Formula: &model.Formula{
+			Rsi: asFloat(d["rsi"]), RsiK: asFloat(d["rsiK"]), RsiD: asFloat(d["rsiD"]),
+			Aroonu: asFloat(d["aroonu"]), Aroond: asFloat(d["aroond"]),
+			Macd: asFloat(d["macd"]), Histogram: asFloat(d["histogram"]),
+		},
+		Ai: &model.Ai{
+			Bigmome:   &model.Bigmome{Buy2: asFloat(d["BUY2"]), Buy1: asFloat(d["BUY1"]), Ambi: asFloat(d["ambi"])},
+			Sell:      &model.Sell{Amb0: asFloat(d["amb0"]), Amb1: asFloat(d["amb1"]), Amb2: asFloat(d["amb2"]), Amb3: asFloat(d["amb3"]), Amb99: asFloat(d["amb99"])},
+			Smallmome: &model.Smallmome{Amo: asFloat(d["amo"]), Ci: asFloat(d["ci"])},
+			Buy:       &model.Buy{Ambb: asFloat(d["ambb"]), Ambb5: asFloat(d["ambb5"]), Ww6: asFloat(d["ww6"]), Ww7: asFloat(d["ww7"])},
+			Mome:      &model.Mome{Amb14: asFloat(d["amb14"]), Amb15: asFloat(d["amb15"]), Amb13: asFloat(d["amb13"]), Amb55: asFloat(d["amb55"]), Amb14p: asFloat(d["amb14p"]), Amb15p: asFloat(d["amb15p"]), Amb13p: asFloat(d["amb13p"]), Amb55p: asFloat(d["amb55p"])},
+			Other:     &model.Other{Amo: asFloat(d["amo"]), Amo1: asFloat(d["amo1"]), Buysell: asFloat(d["BUYSELL"]), BUYSELLevel: asString(d["BUYSELLTYPE"])},
+		},
+	}
+}
+
+func connect() (*mongo.Client, context.Context, context.CancelFunc) {
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	mongoURI := os.Getenv("MONGO_URI")
 	if mongoURI == "" {
 		mongoURI = "mongodb://localhost:27017"
 	}
 	client, err := mongo.Connect(ctx, options.Client().ApplyURI(mongoURI))
 	if err != nil {
+		cancel()
 		panic(err)
 	}
 
-	return client, ctx
+	return client, ctx, cancel
 }
 func Data(namecrypto string) *model.Crypto {
 
-	client, ctx := connect()
+	client, ctx, cancel := connect()
+	defer cancel()
 	namefilter := client.Database("cryptoDatabase").Collection("datastore").FindOne(ctx, bson.M{"name": namecrypto})
 	var podcast bson.M
 	namefilter.Decode(&podcast)
-	name := podcast["name"].(string)
-	time := podcast["TimeFrame"].(primitive.M)["heur"].(string)
-	Projection := podcast["projection"].(float64)
-	gainlose24h := podcast["gainlose"].(primitive.M)["24h"].(float64)
-	gainlose1w := podcast["gainlose"].(primitive.M)["1w"].(float64)
-	gainlose1M := podcast["gainlose"].(primitive.M)["1M"].(float64)
+	tf, _ := podcast["TimeFrame"].(primitive.M)
+	gl, _ := podcast["gainlose"].(primitive.M)
+	name := asString(podcast["name"])
+	time := asString(tf["heur"])
+	Projection := asFloat(podcast["projection"])
+	gainlose24h := asFloat(gl["24h"])
+	gainlose1w := asFloat(gl["1w"])
+	gainlose1M := asFloat(gl["1M"])
 
-	datain := podcast["TimeFrame"].(primitive.M)["dataid"].(string)
-	//opts := options.Find().SetProjection(bson.M{"Open": 1, "_id": 0})
-	//filter, _ := client.Database("cryptoDatabase").Collection("BTCUSDT4h").Find(ctx, bson.M{}, opts)
-
+	datain := asString(tf["dataid"])
 	filter, _ := client.Database("cryptoDatabase").Collection(datain).Find(ctx, bson.M{})
 
 	var modl []*model.Data
 	for filter.Next(ctx) {
 		var episode bson.M
 		filter.Decode(&episode)
-		//fmt.Println(episode)
-
-		dummyLink := &model.Data{Hcl: &model.Hcl{Opentime: episode["Close time"].(float64), Open: episode["Open"].(float64), High: episode["High"].(float64), Low: episode["Low"].(float64), Close: episode["Close"].(float64), Volume: episode["Volume"].(float64)}, Formula: &model.Formula{Rsi: episode["rsi"].(float64), RsiK: episode["rsiK"].(float64), RsiD: episode["rsiD"].(float64), Aroonu: episode["aroonu"].(float64), Aroond: episode["aroond"].(float64), Macd: episode["macd"].(float64), Histogram: episode["histogram"].(float64)}, Ai: &model.Ai{Bigmome: &model.Bigmome{Buy2: episode["BUY2"].(float64), Buy1: episode["BUY1"].(float64), Ambi: episode["ambi"].(float64)}, Sell: &model.Sell{Amb0: episode["amb0"].(float64), Amb1: episode["amb1"].(float64), Amb2: episode["amb2"].(float64), Amb3: episode["amb3"].(float64), Amb99: episode["amb99"].(float64)}, Smallmome: &model.Smallmome{Amo: episode["amo"].(float64), Ci: episode["ci"].(float64)}, Buy: &model.Buy{Ambb: episode["ambb"].(float64), Ambb5: episode["ambb5"].(float64), Ww6: episode["ww6"].(float64), Ww7: episode["ww7"].(float64)}, Mome: &model.Mome{Amb14: episode["amb14"].(float64), Amb15: episode["amb15"].(float64), Amb13: episode["amb13"].(float64), Amb55: episode["amb55"].(float64), Amb14p: asFloat(episode["amb14p"]), Amb15p: asFloat(episode["amb15p"]), Amb13p: asFloat(episode["amb13p"]), Amb55p: asFloat(episode["amb55p"])}, Other: &model.Other{Amo: episode["amo"].(float64), Amo1: episode["amo1"].(float64), Buysell: episode["BUYSELL"].(float64), BUYSELLevel: episode["BUYSELLTYPE"].(string)}}}
-
-		modl = append(modl, dummyLink)
+		modl = append(modl, candleFromDoc(episode))
 	}
 	defer client.Disconnect(ctx)
 	return &model.Crypto{Name: name, Time: time, Projection: Projection, Gainlose: &model.GainLoss{M: gainlose1M, D: gainlose24h, W: gainlose1w}, Data: modl}
 
 }
+
+// Bot returns the backend-computed trading-bot state for an asset. The Python
+// pipeline stores it in a dedicated collection referenced by
+// datastore.TimeFrame.botid; here we just read and shape it for GraphQL.
+func Bot(namecrypto string) *model.Bot {
+	client, ctx, cancel := connect()
+	defer cancel()
+	defer client.Disconnect(ctx)
+
+	var ds bson.M
+	client.Database("cryptoDatabase").Collection("datastore").
+		FindOne(ctx, bson.M{"name": namecrypto}).Decode(&ds)
+
+	tf, _ := ds["TimeFrame"].(primitive.M)
+	botID, _ := tf["botid"].(string)
+	if botID == "" {
+		return &model.Bot{Stance: "UNKNOWN"}
+	}
+
+	var doc bson.M
+	client.Database("cryptoDatabase").Collection(botID).
+		FindOne(ctx, bson.M{"_key": "bot"}).Decode(&doc)
+	if doc == nil {
+		return &model.Bot{Stance: "UNKNOWN"}
+	}
+
+	stance, _ := doc["stance"].(string)
+	return &model.Bot{
+		Stance:     stance,
+		BotMult:    asFloat(doc["botMult"]),
+		BhMult:     asFloat(doc["bhMult"]),
+		EmaGapPct:  asFloat(doc["emaGapPct"]),
+		StartIdx:   asInt(doc["startIdx"]),
+		T:          toFloatSlice(doc["t"]),
+		Close:      toFloatSlice(doc["close"]),
+		Ema:        toFloatSlice(doc["ema"]),
+		DeepBreak:  toFloatSlice(doc["deepBreak"]),
+		InMarket:   toFloatSlice(doc["inMarket"]),
+		Equity:     toFloatSlice(doc["equity"]),
+		Hold:       toFloatSlice(doc["hold"]),
+		Entries:    toIntSlice(doc["entries"]),
+		Trims:      toIntSlice(doc["trims"]),
+		Exits:      toIntSlice(doc["exits"]),
+		SwingBuys:  toIntSlice(doc["swingBuys"]),
+		SwingSells: toIntSlice(doc["swingSells"]),
+	}
+}
+
 func User(name string) *model.User {
-	client, ctx := connect()
+	client, ctx, cancel := connect()
+	defer cancel()
 	namefilter := client.Database("cryptoDatabase").Collection("usercrypto").FindOne(ctx, bson.M{"UserName": name})
 	var podcast bson.M
 	namefilter.Decode(&podcast)
@@ -89,7 +207,8 @@ func User(name string) *model.User {
 	return &model.User{Nameuser: nameuser, Balance: modeuser}
 }
 func ListCrypto() []string {
-	client, ctx := connect()
+	client, ctx, cancel := connect()
+	defer cancel()
 	namefilterlist, _ := client.Database("cryptoDatabase").Collection("datastore").Find(ctx, bson.M{})
 	var list []string
 	for namefilterlist.Next(ctx) {

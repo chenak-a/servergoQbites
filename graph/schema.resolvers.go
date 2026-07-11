@@ -28,6 +28,11 @@ func (r *queryResolver) Allcrypto(ctx context.Context) ([]string, error) {
 	return database.ListCrypto(), nil
 }
 
+// Bot is the resolver for the bot field.
+func (r *queryResolver) Bot(ctx context.Context, name string) (*model.Bot, error) {
+	return database.Bot(name), nil
+}
+
 // Query returns generated.QueryResolver implementation.
 func (r *Resolver) Query() generated.QueryResolver { return &queryResolver{r} }
 

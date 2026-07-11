@@ -83,6 +83,27 @@ type Other {
 	BUYSELL: Float!
 	BUYSELLevel: String!
 }
+# Backend-computed trading-bot state (regime + signals + backtest). Computed in
+# the Python pipeline and merely displayed by the frontend.
+type Bot {
+	stance: String!
+	botMult: Float!
+	bhMult: Float!
+	emaGapPct: Float!
+	startIdx: Int!
+	t: [Float!]!
+	close: [Float!]!
+	ema: [Float!]!
+	deepBreak: [Float!]!
+	inMarket: [Float!]!
+	equity: [Float!]!
+	hold: [Float!]!
+	entries: [Int!]!
+	trims: [Int!]!
+	exits: [Int!]!
+	swingBuys: [Int!]!
+	swingSells: [Int!]!
+}
 type User {
 	nameuser: String!
 	balance:[balance!]!
@@ -97,4 +118,5 @@ type Query {
   	crypto(name: String!): crypto!
 	User(nameuser: String!): User!
 	Allcrypto: [String!]!
+	bot(name: String!): Bot!
 }
