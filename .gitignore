@@ -1,0 +1,15 @@
+# Compiled binaries / test artifacts
+server
+*.test
+*.out
+
+# Env / secrets
+.env
+
+# Agent tooling artifacts
+.claude/
+AGENTS.md
+CLAUDE.md
+
+# OS
+.DS_Store
