@@ -57,6 +57,39 @@ type ComplexityRoot struct {
 		Buy2 func(childComplexity int) int
 	}
 
+	Bot struct {
+		BhMult     func(childComplexity int) int
+		BotMult    func(childComplexity int) int
+		Close      func(childComplexity int) int
+		DeepBreak  func(childComplexity int) int
+		Ema        func(childComplexity int) int
+		EmaGapPct  func(childComplexity int) int
+		Entries    func(childComplexity int) int
+		Equity     func(childComplexity int) int
+		Exits      func(childComplexity int) int
+		Hold       func(childComplexity int) int
+		InMarket   func(childComplexity int) int
+		Stance     func(childComplexity int) int
+		StartIdx   func(childComplexity int) int
+		SwingBuys  func(childComplexity int) int
+		SwingSells func(childComplexity int) int
+		T          func(childComplexity int) int
+		Trims      func(childComplexity int) int
+	}
+
+	CandlePage struct {
+		Data     func(childComplexity int) int
+		Earliest func(childComplexity int) int
+		HasMore  func(childComplexity int) int
+	}
+
+	CryptoMeta struct {
+		Gainlose   func(childComplexity int) int
+		Name       func(childComplexity int) int
+		Projection func(childComplexity int) int
+		Time       func(childComplexity int) int
+	}
+
 	Data struct {
 		Ai      func(childComplexity int) int
 		Formula func(childComplexity int) int
@@ -96,9 +129,12 @@ type ComplexityRoot struct {
 	}
 
 	Query struct {
-		Allcrypto func(childComplexity int) int
-		Crypto    func(childComplexity int, name string) int
-		User      func(childComplexity int, nameuser string) int
+		Allcrypto  func(childComplexity int) int
+		Bot        func(childComplexity int, name string) int
+		Candles    func(childComplexity int, name string, before *float64, limit int) int
+		Crypto     func(childComplexity int, name string) int
+		CryptoMeta func(childComplexity int, name string) int
+		User       func(childComplexity int, nameuser string) int
 	}
 
 	Sell struct {
@@ -150,8 +186,11 @@ type ComplexityRoot struct {
 
 type QueryResolver interface {
 	Crypto(ctx context.Context, name string) (*model.Crypto, error)
+	Candles(ctx context.Context, name string, before *float64, limit int) (*model.CandlePage, error)
+	CryptoMeta(ctx context.Context, name string) (*model.CryptoMeta, error)
 	User(ctx context.Context, nameuser string) (*model.User, error)
 	Allcrypto(ctx context.Context) ([]string, error)
+	Bot(ctx context.Context, name string) (*model.Bot, error)
 }
 
 // endregion ************************** generated!.gotpl **************************
@@ -252,6 +291,153 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 		}
 
 		return e.ComplexityRoot.Bigmome.Buy2(childComplexity), true
+
+	case "Bot.bhMult":
+		if e.ComplexityRoot.Bot.BhMult == nil {
+			break
+		}
+
+		return e.ComplexityRoot.Bot.BhMult(childComplexity), true
+	case "Bot.botMult":
+		if e.ComplexityRoot.Bot.BotMult == nil {
+			break
+		}
+
+		return e.ComplexityRoot.Bot.BotMult(childComplexity), true
+	case "Bot.close":
+		if e.ComplexityRoot.Bot.Close == nil {
+			break
+		}
+
+		return e.ComplexityRoot.Bot.Close(childComplexity), true
+	case "Bot.deepBreak":
+		if e.ComplexityRoot.Bot.DeepBreak == nil {
+			break
+		}
+
+		return e.ComplexityRoot.Bot.DeepBreak(childComplexity), true
+	case "Bot.ema":
+		if e.ComplexityRoot.Bot.Ema == nil {
+			break
+		}
+
+		return e.ComplexityRoot.Bot.Ema(childComplexity), true
+	case "Bot.emaGapPct":
+		if e.ComplexityRoot.Bot.EmaGapPct == nil {
+			break
+		}
+
+		return e.ComplexityRoot.Bot.EmaGapPct(childComplexity), true
+	case "Bot.entries":
+		if e.ComplexityRoot.Bot.Entries == nil {
+			break
+		}
+
+		return e.ComplexityRoot.Bot.Entries(childComplexity), true
+	case "Bot.equity":
+		if e.ComplexityRoot.Bot.Equity == nil {
+			break
+		}
+
+		return e.ComplexityRoot.Bot.Equity(childComplexity), true
+	case "Bot.exits":
+		if e.ComplexityRoot.Bot.Exits == nil {
+			break
+		}
+
+		return e.ComplexityRoot.Bot.Exits(childComplexity), true
+	case "Bot.hold":
+		if e.ComplexityRoot.Bot.Hold == nil {
+			break
+		}
+
+		return e.ComplexityRoot.Bot.Hold(childComplexity), true
+	case "Bot.inMarket":
+		if e.ComplexityRoot.Bot.InMarket == nil {
+			break
+		}
+
+		return e.ComplexityRoot.Bot.InMarket(childComplexity), true
+	case "Bot.stance":
+		if e.ComplexityRoot.Bot.Stance == nil {
+			break
+		}
+
+		return e.ComplexityRoot.Bot.Stance(childComplexity), true
+	case "Bot.startIdx":
+		if e.ComplexityRoot.Bot.StartIdx == nil {
+			break
+		}
+
+		return e.ComplexityRoot.Bot.StartIdx(childComplexity), true
+	case "Bot.swingBuys":
+		if e.ComplexityRoot.Bot.SwingBuys == nil {
+			break
+		}
+
+		return e.ComplexityRoot.Bot.SwingBuys(childComplexity), true
+	case "Bot.swingSells":
+		if e.ComplexityRoot.Bot.SwingSells == nil {
+			break
+		}
+
+		return e.ComplexityRoot.Bot.SwingSells(childComplexity), true
+	case "Bot.t":
+		if e.ComplexityRoot.Bot.T == nil {
+			break
+		}
+
+		return e.ComplexityRoot.Bot.T(childComplexity), true
+	case "Bot.trims":
+		if e.ComplexityRoot.Bot.Trims == nil {
+			break
+		}
+
+		return e.ComplexityRoot.Bot.Trims(childComplexity), true
+
+	case "CandlePage.data":
+		if e.ComplexityRoot.CandlePage.Data == nil {
+			break
+		}
+
+		return e.ComplexityRoot.CandlePage.Data(childComplexity), true
+	case "CandlePage.earliest":
+		if e.ComplexityRoot.CandlePage.Earliest == nil {
+			break
+		}
+
+		return e.ComplexityRoot.CandlePage.Earliest(childComplexity), true
+	case "CandlePage.hasMore":
+		if e.ComplexityRoot.CandlePage.HasMore == nil {
+			break
+		}
+
+		return e.ComplexityRoot.CandlePage.HasMore(childComplexity), true
+
+	case "CryptoMeta.gainlose":
+		if e.ComplexityRoot.CryptoMeta.Gainlose == nil {
+			break
+		}
+
+		return e.ComplexityRoot.CryptoMeta.Gainlose(childComplexity), true
+	case "CryptoMeta.name":
+		if e.ComplexityRoot.CryptoMeta.Name == nil {
+			break
+		}
+
+		return e.ComplexityRoot.CryptoMeta.Name(childComplexity), true
+	case "CryptoMeta.projection":
+		if e.ComplexityRoot.CryptoMeta.Projection == nil {
+			break
+		}
+
+		return e.ComplexityRoot.CryptoMeta.Projection(childComplexity), true
+	case "CryptoMeta.time":
+		if e.ComplexityRoot.CryptoMeta.Time == nil {
+			break
+		}
+
+		return e.ComplexityRoot.CryptoMeta.Time(childComplexity), true
 
 	case "Data.ai":
 		if e.ComplexityRoot.Data.Ai == nil {
@@ -402,6 +588,28 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 		}
 
 		return e.ComplexityRoot.Query.Allcrypto(childComplexity), true
+	case "Query.bot":
+		if e.ComplexityRoot.Query.Bot == nil {
+			break
+		}
+
+		args, err := ec.field_Query_bot_args(ctx, rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.ComplexityRoot.Query.Bot(childComplexity, args["name"].(string)), true
+	case "Query.candles":
+		if e.ComplexityRoot.Query.Candles == nil {
+			break
+		}
+
+		args, err := ec.field_Query_candles_args(ctx, rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.ComplexityRoot.Query.Candles(childComplexity, args["name"].(string), args["before"].(*float64), args["limit"].(int)), true
 	case "Query.crypto":
 		if e.ComplexityRoot.Query.Crypto == nil {
 			break
@@ -413,6 +621,17 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 		}
 
 		return e.ComplexityRoot.Query.Crypto(childComplexity, args["name"].(string)), true
+	case "Query.cryptoMeta":
+		if e.ComplexityRoot.Query.CryptoMeta == nil {
+			break
+		}
+
+		args, err := ec.field_Query_cryptoMeta_args(ctx, rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.ComplexityRoot.Query.CryptoMeta(childComplexity, args["name"].(string)), true
 
 	case "Query.User":
 		if e.ComplexityRoot.Query.User == nil {
@@ -660,6 +879,22 @@ type Data {
 	formula: Formula!
 	ai: Ai!
 }
+# A window of candles for lazy / infinite-scroll loading. ` + "`" + `data` + "`" + ` is ascending by
+# time; ` + "`" + `hasMore` + "`" + ` is true when older bars exist before the window; ` + "`" + `earliest` + "`" + ` is
+# the opentime of the very first stored bar (the backfill floor).
+type CandlePage {
+	data: [Data!]!
+	hasMore: Boolean!
+	earliest: Float!
+}
+# Lean per-asset metadata (no candle array) so the header/watchlist can render
+# without transferring the full multi-year series.
+type CryptoMeta {
+	name: String!
+	time: String!
+	projection: Float!
+	gainlose: GainLoss!
+}
 type GainLoss{
 	M: Float!
 	W: Float!
@@ -728,6 +963,27 @@ type Other {
 	BUYSELL: Float!
 	BUYSELLevel: String!
 }
+# Backend-computed trading-bot state (regime + signals + backtest). Computed in
+# the Python pipeline and merely displayed by the frontend.
+type Bot {
+	stance: String!
+	botMult: Float!
+	bhMult: Float!
+	emaGapPct: Float!
+	startIdx: Int!
+	t: [Float!]!
+	close: [Float!]!
+	ema: [Float!]!
+	deepBreak: [Float!]!
+	inMarket: [Float!]!
+	equity: [Float!]!
+	hold: [Float!]!
+	entries: [Int!]!
+	trims: [Int!]!
+	exits: [Int!]!
+	swingBuys: [Int!]!
+	swingSells: [Int!]!
+}
 type User {
 	nameuser: String!
 	balance:[balance!]!
@@ -740,8 +996,13 @@ type balance {
 
 type Query {
   	crypto(name: String!): crypto!
+	# Lazy-loaded candle window. ` + "`" + `before` + "`" + ` is a cursor (opentime); omit it for the
+	# most recent ` + "`" + `limit` + "`" + ` bars, or pass the oldest loaded opentime to backfill.
+	candles(name: String!, before: Float, limit: Int!): CandlePage!
+	cryptoMeta(name: String!): CryptoMeta!
 	User(nameuser: String!): User!
 	Allcrypto: [String!]!
+	bot(name: String!): Bot!
 }
 `, BuiltIn: false},
 }
@@ -793,6 +1054,72 @@ func (ec *executionContext) childFields_Bigmome(ctx context.Context, field graph
 		return ec.fieldContext_Bigmome_ambi(ctx, field)
 	}
 	return nil, fmt.Errorf("no field named %q was found under type Bigmome", field.Name)
+}
+
+func (ec *executionContext) childFields_Bot(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+	switch field.Name {
+	case "stance":
+		return ec.fieldContext_Bot_stance(ctx, field)
+	case "botMult":
+		return ec.fieldContext_Bot_botMult(ctx, field)
+	case "bhMult":
+		return ec.fieldContext_Bot_bhMult(ctx, field)
+	case "emaGapPct":
+		return ec.fieldContext_Bot_emaGapPct(ctx, field)
+	case "startIdx":
+		return ec.fieldContext_Bot_startIdx(ctx, field)
+	case "t":
+		return ec.fieldContext_Bot_t(ctx, field)
+	case "close":
+		return ec.fieldContext_Bot_close(ctx, field)
+	case "ema":
+		return ec.fieldContext_Bot_ema(ctx, field)
+	case "deepBreak":
+		return ec.fieldContext_Bot_deepBreak(ctx, field)
+	case "inMarket":
+		return ec.fieldContext_Bot_inMarket(ctx, field)
+	case "equity":
+		return ec.fieldContext_Bot_equity(ctx, field)
+	case "hold":
+		return ec.fieldContext_Bot_hold(ctx, field)
+	case "entries":
+		return ec.fieldContext_Bot_entries(ctx, field)
+	case "trims":
+		return ec.fieldContext_Bot_trims(ctx, field)
+	case "exits":
+		return ec.fieldContext_Bot_exits(ctx, field)
+	case "swingBuys":
+		return ec.fieldContext_Bot_swingBuys(ctx, field)
+	case "swingSells":
+		return ec.fieldContext_Bot_swingSells(ctx, field)
+	}
+	return nil, fmt.Errorf("no field named %q was found under type Bot", field.Name)
+}
+
+func (ec *executionContext) childFields_CandlePage(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+	switch field.Name {
+	case "data":
+		return ec.fieldContext_CandlePage_data(ctx, field)
+	case "hasMore":
+		return ec.fieldContext_CandlePage_hasMore(ctx, field)
+	case "earliest":
+		return ec.fieldContext_CandlePage_earliest(ctx, field)
+	}
+	return nil, fmt.Errorf("no field named %q was found under type CandlePage", field.Name)
+}
+
+func (ec *executionContext) childFields_CryptoMeta(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+	switch field.Name {
+	case "name":
+		return ec.fieldContext_CryptoMeta_name(ctx, field)
+	case "time":
+		return ec.fieldContext_CryptoMeta_time(ctx, field)
+	case "projection":
+		return ec.fieldContext_CryptoMeta_projection(ctx, field)
+	case "gainlose":
+		return ec.fieldContext_CryptoMeta_gainlose(ctx, field)
+	}
+	return nil, fmt.Errorf("no field named %q was found under type CryptoMeta", field.Name)
 }
 
 func (ec *executionContext) childFields_Data(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
@@ -1086,6 +1413,64 @@ func (ec *executionContext) field_Query_User_args(ctx context.Context, rawArgs m
 }
 
 func (ec *executionContext) field_Query___type_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
+	var err error
+	args := map[string]any{}
+	arg0, err := graphql.ProcessArgField(ctx, rawArgs, "name",
+		func(ctx context.Context, v any) (string, error) {
+			return ec.unmarshalNString2string(ctx, v)
+		})
+	if err != nil {
+		return nil, err
+	}
+	args["name"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Query_bot_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
+	var err error
+	args := map[string]any{}
+	arg0, err := graphql.ProcessArgField(ctx, rawArgs, "name",
+		func(ctx context.Context, v any) (string, error) {
+			return ec.unmarshalNString2string(ctx, v)
+		})
+	if err != nil {
+		return nil, err
+	}
+	args["name"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Query_candles_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
+	var err error
+	args := map[string]any{}
+	arg0, err := graphql.ProcessArgField(ctx, rawArgs, "name",
+		func(ctx context.Context, v any) (string, error) {
+			return ec.unmarshalNString2string(ctx, v)
+		})
+	if err != nil {
+		return nil, err
+	}
+	args["name"] = arg0
+	arg1, err := graphql.ProcessArgField(ctx, rawArgs, "before",
+		func(ctx context.Context, v any) (*float64, error) {
+			return ec.unmarshalOFloat2ᚖfloat64(ctx, v)
+		})
+	if err != nil {
+		return nil, err
+	}
+	args["before"] = arg1
+	arg2, err := graphql.ProcessArgField(ctx, rawArgs, "limit",
+		func(ctx context.Context, v any) (int, error) {
+			return ec.unmarshalNInt2int(ctx, v)
+		})
+	if err != nil {
+		return nil, err
+	}
+	args["limit"] = arg2
+	return args, nil
+}
+
+func (ec *executionContext) field_Query_cryptoMeta_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
 	var err error
 	args := map[string]any{}
 	arg0, err := graphql.ProcessArgField(ctx, rawArgs, "name",
@@ -1524,6 +1909,576 @@ func (ec *executionContext) _Bigmome_ambi(ctx context.Context, field graphql.Col
 }
 func (ec *executionContext) fieldContext_Bigmome_ambi(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	return graphql.NewScalarFieldContext("Bigmome", field, false, false, errors.New("field of type Float does not have child fields"))
+}
+
+func (ec *executionContext) _Bot_stance(ctx context.Context, field graphql.CollectedField, obj *model.Bot) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return ec.fieldContext_Bot_stance(ctx, field)
+		},
+		func(ctx context.Context) (any, error) {
+			return obj.Stance, nil
+		},
+		nil,
+		func(ctx context.Context, selections ast.SelectionSet, v string) graphql.Marshaler {
+			return ec.marshalNString2string(ctx, selections, v)
+		},
+		true,
+		true,
+	)
+}
+func (ec *executionContext) fieldContext_Bot_stance(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	return graphql.NewScalarFieldContext("Bot", field, false, false, errors.New("field of type String does not have child fields"))
+}
+
+func (ec *executionContext) _Bot_botMult(ctx context.Context, field graphql.CollectedField, obj *model.Bot) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return ec.fieldContext_Bot_botMult(ctx, field)
+		},
+		func(ctx context.Context) (any, error) {
+			return obj.BotMult, nil
+		},
+		nil,
+		func(ctx context.Context, selections ast.SelectionSet, v float64) graphql.Marshaler {
+			return ec.marshalNFloat2float64(ctx, selections, v)
+		},
+		true,
+		true,
+	)
+}
+func (ec *executionContext) fieldContext_Bot_botMult(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	return graphql.NewScalarFieldContext("Bot", field, false, false, errors.New("field of type Float does not have child fields"))
+}
+
+func (ec *executionContext) _Bot_bhMult(ctx context.Context, field graphql.CollectedField, obj *model.Bot) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return ec.fieldContext_Bot_bhMult(ctx, field)
+		},
+		func(ctx context.Context) (any, error) {
+			return obj.BhMult, nil
+		},
+		nil,
+		func(ctx context.Context, selections ast.SelectionSet, v float64) graphql.Marshaler {
+			return ec.marshalNFloat2float64(ctx, selections, v)
+		},
+		true,
+		true,
+	)
+}
+func (ec *executionContext) fieldContext_Bot_bhMult(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	return graphql.NewScalarFieldContext("Bot", field, false, false, errors.New("field of type Float does not have child fields"))
+}
+
+func (ec *executionContext) _Bot_emaGapPct(ctx context.Context, field graphql.CollectedField, obj *model.Bot) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return ec.fieldContext_Bot_emaGapPct(ctx, field)
+		},
+		func(ctx context.Context) (any, error) {
+			return obj.EmaGapPct, nil
+		},
+		nil,
+		func(ctx context.Context, selections ast.SelectionSet, v float64) graphql.Marshaler {
+			return ec.marshalNFloat2float64(ctx, selections, v)
+		},
+		true,
+		true,
+	)
+}
+func (ec *executionContext) fieldContext_Bot_emaGapPct(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	return graphql.NewScalarFieldContext("Bot", field, false, false, errors.New("field of type Float does not have child fields"))
+}
+
+func (ec *executionContext) _Bot_startIdx(ctx context.Context, field graphql.CollectedField, obj *model.Bot) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return ec.fieldContext_Bot_startIdx(ctx, field)
+		},
+		func(ctx context.Context) (any, error) {
+			return obj.StartIdx, nil
+		},
+		nil,
+		func(ctx context.Context, selections ast.SelectionSet, v int) graphql.Marshaler {
+			return ec.marshalNInt2int(ctx, selections, v)
+		},
+		true,
+		true,
+	)
+}
+func (ec *executionContext) fieldContext_Bot_startIdx(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	return graphql.NewScalarFieldContext("Bot", field, false, false, errors.New("field of type Int does not have child fields"))
+}
+
+func (ec *executionContext) _Bot_t(ctx context.Context, field graphql.CollectedField, obj *model.Bot) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return ec.fieldContext_Bot_t(ctx, field)
+		},
+		func(ctx context.Context) (any, error) {
+			return obj.T, nil
+		},
+		nil,
+		func(ctx context.Context, selections ast.SelectionSet, v []float64) graphql.Marshaler {
+			return ec.marshalNFloat2ᚕfloat64ᚄ(ctx, selections, v)
+		},
+		true,
+		true,
+	)
+}
+func (ec *executionContext) fieldContext_Bot_t(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	return graphql.NewScalarFieldContext("Bot", field, false, false, errors.New("field of type Float does not have child fields"))
+}
+
+func (ec *executionContext) _Bot_close(ctx context.Context, field graphql.CollectedField, obj *model.Bot) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return ec.fieldContext_Bot_close(ctx, field)
+		},
+		func(ctx context.Context) (any, error) {
+			return obj.Close, nil
+		},
+		nil,
+		func(ctx context.Context, selections ast.SelectionSet, v []float64) graphql.Marshaler {
+			return ec.marshalNFloat2ᚕfloat64ᚄ(ctx, selections, v)
+		},
+		true,
+		true,
+	)
+}
+func (ec *executionContext) fieldContext_Bot_close(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	return graphql.NewScalarFieldContext("Bot", field, false, false, errors.New("field of type Float does not have child fields"))
+}
+
+func (ec *executionContext) _Bot_ema(ctx context.Context, field graphql.CollectedField, obj *model.Bot) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return ec.fieldContext_Bot_ema(ctx, field)
+		},
+		func(ctx context.Context) (any, error) {
+			return obj.Ema, nil
+		},
+		nil,
+		func(ctx context.Context, selections ast.SelectionSet, v []float64) graphql.Marshaler {
+			return ec.marshalNFloat2ᚕfloat64ᚄ(ctx, selections, v)
+		},
+		true,
+		true,
+	)
+}
+func (ec *executionContext) fieldContext_Bot_ema(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	return graphql.NewScalarFieldContext("Bot", field, false, false, errors.New("field of type Float does not have child fields"))
+}
+
+func (ec *executionContext) _Bot_deepBreak(ctx context.Context, field graphql.CollectedField, obj *model.Bot) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return ec.fieldContext_Bot_deepBreak(ctx, field)
+		},
+		func(ctx context.Context) (any, error) {
+			return obj.DeepBreak, nil
+		},
+		nil,
+		func(ctx context.Context, selections ast.SelectionSet, v []float64) graphql.Marshaler {
+			return ec.marshalNFloat2ᚕfloat64ᚄ(ctx, selections, v)
+		},
+		true,
+		true,
+	)
+}
+func (ec *executionContext) fieldContext_Bot_deepBreak(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	return graphql.NewScalarFieldContext("Bot", field, false, false, errors.New("field of type Float does not have child fields"))
+}
+
+func (ec *executionContext) _Bot_inMarket(ctx context.Context, field graphql.CollectedField, obj *model.Bot) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return ec.fieldContext_Bot_inMarket(ctx, field)
+		},
+		func(ctx context.Context) (any, error) {
+			return obj.InMarket, nil
+		},
+		nil,
+		func(ctx context.Context, selections ast.SelectionSet, v []float64) graphql.Marshaler {
+			return ec.marshalNFloat2ᚕfloat64ᚄ(ctx, selections, v)
+		},
+		true,
+		true,
+	)
+}
+func (ec *executionContext) fieldContext_Bot_inMarket(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	return graphql.NewScalarFieldContext("Bot", field, false, false, errors.New("field of type Float does not have child fields"))
+}
+
+func (ec *executionContext) _Bot_equity(ctx context.Context, field graphql.CollectedField, obj *model.Bot) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return ec.fieldContext_Bot_equity(ctx, field)
+		},
+		func(ctx context.Context) (any, error) {
+			return obj.Equity, nil
+		},
+		nil,
+		func(ctx context.Context, selections ast.SelectionSet, v []float64) graphql.Marshaler {
+			return ec.marshalNFloat2ᚕfloat64ᚄ(ctx, selections, v)
+		},
+		true,
+		true,
+	)
+}
+func (ec *executionContext) fieldContext_Bot_equity(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	return graphql.NewScalarFieldContext("Bot", field, false, false, errors.New("field of type Float does not have child fields"))
+}
+
+func (ec *executionContext) _Bot_hold(ctx context.Context, field graphql.CollectedField, obj *model.Bot) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return ec.fieldContext_Bot_hold(ctx, field)
+		},
+		func(ctx context.Context) (any, error) {
+			return obj.Hold, nil
+		},
+		nil,
+		func(ctx context.Context, selections ast.SelectionSet, v []float64) graphql.Marshaler {
+			return ec.marshalNFloat2ᚕfloat64ᚄ(ctx, selections, v)
+		},
+		true,
+		true,
+	)
+}
+func (ec *executionContext) fieldContext_Bot_hold(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	return graphql.NewScalarFieldContext("Bot", field, false, false, errors.New("field of type Float does not have child fields"))
+}
+
+func (ec *executionContext) _Bot_entries(ctx context.Context, field graphql.CollectedField, obj *model.Bot) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return ec.fieldContext_Bot_entries(ctx, field)
+		},
+		func(ctx context.Context) (any, error) {
+			return obj.Entries, nil
+		},
+		nil,
+		func(ctx context.Context, selections ast.SelectionSet, v []int) graphql.Marshaler {
+			return ec.marshalNInt2ᚕintᚄ(ctx, selections, v)
+		},
+		true,
+		true,
+	)
+}
+func (ec *executionContext) fieldContext_Bot_entries(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	return graphql.NewScalarFieldContext("Bot", field, false, false, errors.New("field of type Int does not have child fields"))
+}
+
+func (ec *executionContext) _Bot_trims(ctx context.Context, field graphql.CollectedField, obj *model.Bot) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return ec.fieldContext_Bot_trims(ctx, field)
+		},
+		func(ctx context.Context) (any, error) {
+			return obj.Trims, nil
+		},
+		nil,
+		func(ctx context.Context, selections ast.SelectionSet, v []int) graphql.Marshaler {
+			return ec.marshalNInt2ᚕintᚄ(ctx, selections, v)
+		},
+		true,
+		true,
+	)
+}
+func (ec *executionContext) fieldContext_Bot_trims(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	return graphql.NewScalarFieldContext("Bot", field, false, false, errors.New("field of type Int does not have child fields"))
+}
+
+func (ec *executionContext) _Bot_exits(ctx context.Context, field graphql.CollectedField, obj *model.Bot) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return ec.fieldContext_Bot_exits(ctx, field)
+		},
+		func(ctx context.Context) (any, error) {
+			return obj.Exits, nil
+		},
+		nil,
+		func(ctx context.Context, selections ast.SelectionSet, v []int) graphql.Marshaler {
+			return ec.marshalNInt2ᚕintᚄ(ctx, selections, v)
+		},
+		true,
+		true,
+	)
+}
+func (ec *executionContext) fieldContext_Bot_exits(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	return graphql.NewScalarFieldContext("Bot", field, false, false, errors.New("field of type Int does not have child fields"))
+}
+
+func (ec *executionContext) _Bot_swingBuys(ctx context.Context, field graphql.CollectedField, obj *model.Bot) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return ec.fieldContext_Bot_swingBuys(ctx, field)
+		},
+		func(ctx context.Context) (any, error) {
+			return obj.SwingBuys, nil
+		},
+		nil,
+		func(ctx context.Context, selections ast.SelectionSet, v []int) graphql.Marshaler {
+			return ec.marshalNInt2ᚕintᚄ(ctx, selections, v)
+		},
+		true,
+		true,
+	)
+}
+func (ec *executionContext) fieldContext_Bot_swingBuys(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	return graphql.NewScalarFieldContext("Bot", field, false, false, errors.New("field of type Int does not have child fields"))
+}
+
+func (ec *executionContext) _Bot_swingSells(ctx context.Context, field graphql.CollectedField, obj *model.Bot) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return ec.fieldContext_Bot_swingSells(ctx, field)
+		},
+		func(ctx context.Context) (any, error) {
+			return obj.SwingSells, nil
+		},
+		nil,
+		func(ctx context.Context, selections ast.SelectionSet, v []int) graphql.Marshaler {
+			return ec.marshalNInt2ᚕintᚄ(ctx, selections, v)
+		},
+		true,
+		true,
+	)
+}
+func (ec *executionContext) fieldContext_Bot_swingSells(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	return graphql.NewScalarFieldContext("Bot", field, false, false, errors.New("field of type Int does not have child fields"))
+}
+
+func (ec *executionContext) _CandlePage_data(ctx context.Context, field graphql.CollectedField, obj *model.CandlePage) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return ec.fieldContext_CandlePage_data(ctx, field)
+		},
+		func(ctx context.Context) (any, error) {
+			return obj.Data, nil
+		},
+		nil,
+		func(ctx context.Context, selections ast.SelectionSet, v []*model.Data) graphql.Marshaler {
+			return ec.marshalNData2ᚕᚖgithubᚗcomᚋchenakᚋhackernewsᚋgraphᚋmodelᚐDataᚄ(ctx, selections, v)
+		},
+		true,
+		true,
+	)
+}
+func (ec *executionContext) fieldContext_CandlePage_data(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "CandlePage",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return ec.childFields_Data(ctx, field)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _CandlePage_hasMore(ctx context.Context, field graphql.CollectedField, obj *model.CandlePage) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return ec.fieldContext_CandlePage_hasMore(ctx, field)
+		},
+		func(ctx context.Context) (any, error) {
+			return obj.HasMore, nil
+		},
+		nil,
+		func(ctx context.Context, selections ast.SelectionSet, v bool) graphql.Marshaler {
+			return ec.marshalNBoolean2bool(ctx, selections, v)
+		},
+		true,
+		true,
+	)
+}
+func (ec *executionContext) fieldContext_CandlePage_hasMore(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	return graphql.NewScalarFieldContext("CandlePage", field, false, false, errors.New("field of type Boolean does not have child fields"))
+}
+
+func (ec *executionContext) _CandlePage_earliest(ctx context.Context, field graphql.CollectedField, obj *model.CandlePage) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return ec.fieldContext_CandlePage_earliest(ctx, field)
+		},
+		func(ctx context.Context) (any, error) {
+			return obj.Earliest, nil
+		},
+		nil,
+		func(ctx context.Context, selections ast.SelectionSet, v float64) graphql.Marshaler {
+			return ec.marshalNFloat2float64(ctx, selections, v)
+		},
+		true,
+		true,
+	)
+}
+func (ec *executionContext) fieldContext_CandlePage_earliest(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	return graphql.NewScalarFieldContext("CandlePage", field, false, false, errors.New("field of type Float does not have child fields"))
+}
+
+func (ec *executionContext) _CryptoMeta_name(ctx context.Context, field graphql.CollectedField, obj *model.CryptoMeta) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return ec.fieldContext_CryptoMeta_name(ctx, field)
+		},
+		func(ctx context.Context) (any, error) {
+			return obj.Name, nil
+		},
+		nil,
+		func(ctx context.Context, selections ast.SelectionSet, v string) graphql.Marshaler {
+			return ec.marshalNString2string(ctx, selections, v)
+		},
+		true,
+		true,
+	)
+}
+func (ec *executionContext) fieldContext_CryptoMeta_name(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	return graphql.NewScalarFieldContext("CryptoMeta", field, false, false, errors.New("field of type String does not have child fields"))
+}
+
+func (ec *executionContext) _CryptoMeta_time(ctx context.Context, field graphql.CollectedField, obj *model.CryptoMeta) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return ec.fieldContext_CryptoMeta_time(ctx, field)
+		},
+		func(ctx context.Context) (any, error) {
+			return obj.Time, nil
+		},
+		nil,
+		func(ctx context.Context, selections ast.SelectionSet, v string) graphql.Marshaler {
+			return ec.marshalNString2string(ctx, selections, v)
+		},
+		true,
+		true,
+	)
+}
+func (ec *executionContext) fieldContext_CryptoMeta_time(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	return graphql.NewScalarFieldContext("CryptoMeta", field, false, false, errors.New("field of type String does not have child fields"))
+}
+
+func (ec *executionContext) _CryptoMeta_projection(ctx context.Context, field graphql.CollectedField, obj *model.CryptoMeta) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return ec.fieldContext_CryptoMeta_projection(ctx, field)
+		},
+		func(ctx context.Context) (any, error) {
+			return obj.Projection, nil
+		},
+		nil,
+		func(ctx context.Context, selections ast.SelectionSet, v float64) graphql.Marshaler {
+			return ec.marshalNFloat2float64(ctx, selections, v)
+		},
+		true,
+		true,
+	)
+}
+func (ec *executionContext) fieldContext_CryptoMeta_projection(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	return graphql.NewScalarFieldContext("CryptoMeta", field, false, false, errors.New("field of type Float does not have child fields"))
+}
+
+func (ec *executionContext) _CryptoMeta_gainlose(ctx context.Context, field graphql.CollectedField, obj *model.CryptoMeta) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return ec.fieldContext_CryptoMeta_gainlose(ctx, field)
+		},
+		func(ctx context.Context) (any, error) {
+			return obj.Gainlose, nil
+		},
+		nil,
+		func(ctx context.Context, selections ast.SelectionSet, v *model.GainLoss) graphql.Marshaler {
+			return ec.marshalNGainLoss2ᚖgithubᚗcomᚋchenakᚋhackernewsᚋgraphᚋmodelᚐGainLoss(ctx, selections, v)
+		},
+		true,
+		true,
+	)
+}
+func (ec *executionContext) fieldContext_CryptoMeta_gainlose(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "CryptoMeta",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return ec.childFields_GainLoss(ctx, field)
+		},
+	}
+	return fc, nil
 }
 
 func (ec *executionContext) _Data_hcl(ctx context.Context, field graphql.CollectedField, obj *model.Data) (ret graphql.Marshaler) {
@@ -2126,6 +3081,94 @@ func (ec *executionContext) fieldContext_Query_crypto(ctx context.Context, field
 	return fc, nil
 }
 
+func (ec *executionContext) _Query_candles(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return ec.fieldContext_Query_candles(ctx, field)
+		},
+		func(ctx context.Context) (any, error) {
+			fc := graphql.GetFieldContext(ctx)
+			return ec.Resolvers.Query().Candles(ctx, fc.Args["name"].(string), fc.Args["before"].(*float64), fc.Args["limit"].(int))
+		},
+		nil,
+		func(ctx context.Context, selections ast.SelectionSet, v *model.CandlePage) graphql.Marshaler {
+			return ec.marshalNCandlePage2ᚖgithubᚗcomᚋchenakᚋhackernewsᚋgraphᚋmodelᚐCandlePage(ctx, selections, v)
+		},
+		true,
+		true,
+	)
+}
+func (ec *executionContext) fieldContext_Query_candles(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Query",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return ec.childFields_CandlePage(ctx, field)
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Query_candles_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Query_cryptoMeta(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return ec.fieldContext_Query_cryptoMeta(ctx, field)
+		},
+		func(ctx context.Context) (any, error) {
+			fc := graphql.GetFieldContext(ctx)
+			return ec.Resolvers.Query().CryptoMeta(ctx, fc.Args["name"].(string))
+		},
+		nil,
+		func(ctx context.Context, selections ast.SelectionSet, v *model.CryptoMeta) graphql.Marshaler {
+			return ec.marshalNCryptoMeta2ᚖgithubᚗcomᚋchenakᚋhackernewsᚋgraphᚋmodelᚐCryptoMeta(ctx, selections, v)
+		},
+		true,
+		true,
+	)
+}
+func (ec *executionContext) fieldContext_Query_cryptoMeta(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Query",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return ec.childFields_CryptoMeta(ctx, field)
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Query_cryptoMeta_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
+	}
+	return fc, nil
+}
+
 func (ec *executionContext) _Query_User(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
 	return graphql.ResolveField(
 		ctx,
@@ -2191,6 +3234,50 @@ func (ec *executionContext) _Query_Allcrypto(ctx context.Context, field graphql.
 }
 func (ec *executionContext) fieldContext_Query_Allcrypto(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	return graphql.NewScalarFieldContext("Query", field, true, true, errors.New("field of type String does not have child fields"))
+}
+
+func (ec *executionContext) _Query_bot(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return ec.fieldContext_Query_bot(ctx, field)
+		},
+		func(ctx context.Context) (any, error) {
+			fc := graphql.GetFieldContext(ctx)
+			return ec.Resolvers.Query().Bot(ctx, fc.Args["name"].(string))
+		},
+		nil,
+		func(ctx context.Context, selections ast.SelectionSet, v *model.Bot) graphql.Marshaler {
+			return ec.marshalNBot2ᚖgithubᚗcomᚋchenakᚋhackernewsᚋgraphᚋmodelᚐBot(ctx, selections, v)
+		},
+		true,
+		true,
+	)
+}
+func (ec *executionContext) fieldContext_Query_bot(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Query",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return ec.childFields_Bot(ctx, field)
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Query_bot_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
+	}
+	return fc, nil
 }
 
 func (ec *executionContext) _Query___type(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
@@ -4079,6 +5166,225 @@ func (ec *executionContext) _Bigmome(ctx context.Context, sel ast.SelectionSet, 
 	return out
 }
 
+var botImplementors = []string{"Bot"}
+
+func (ec *executionContext) _Bot(ctx context.Context, sel ast.SelectionSet, obj *model.Bot) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, botImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	deferredFieldSet := graphql.NewFieldSet(nil)
+	deferLabelToView := make(map[string]*graphql.FieldSetView)
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("Bot")
+		case "stance":
+			out.Values[i] = ec._Bot_stance(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "botMult":
+			out.Values[i] = ec._Bot_botMult(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "bhMult":
+			out.Values[i] = ec._Bot_bhMult(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "emaGapPct":
+			out.Values[i] = ec._Bot_emaGapPct(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "startIdx":
+			out.Values[i] = ec._Bot_startIdx(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "t":
+			out.Values[i] = ec._Bot_t(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "close":
+			out.Values[i] = ec._Bot_close(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "ema":
+			out.Values[i] = ec._Bot_ema(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "deepBreak":
+			out.Values[i] = ec._Bot_deepBreak(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "inMarket":
+			out.Values[i] = ec._Bot_inMarket(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "equity":
+			out.Values[i] = ec._Bot_equity(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "hold":
+			out.Values[i] = ec._Bot_hold(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "entries":
+			out.Values[i] = ec._Bot_entries(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "trims":
+			out.Values[i] = ec._Bot_trims(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "exits":
+			out.Values[i] = ec._Bot_exits(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "swingBuys":
+			out.Values[i] = ec._Bot_swingBuys(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "swingSells":
+			out.Values[i] = ec._Bot_swingSells(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
+		return graphql.Null
+	}
+
+	atomic.AddInt32(&ec.Deferred, int32(min(len(deferLabelToView), math.MaxInt32)))
+
+	ec.ProcessDeferredGroup(graphql.DeferredGroup{
+		Defers:   deferLabelToView,
+		Path:     graphql.GetPath(ctx),
+		FieldSet: deferredFieldSet,
+		Context:  ctx,
+	})
+
+	return out
+}
+
+var candlePageImplementors = []string{"CandlePage"}
+
+func (ec *executionContext) _CandlePage(ctx context.Context, sel ast.SelectionSet, obj *model.CandlePage) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, candlePageImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	deferredFieldSet := graphql.NewFieldSet(nil)
+	deferLabelToView := make(map[string]*graphql.FieldSetView)
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("CandlePage")
+		case "data":
+			out.Values[i] = ec._CandlePage_data(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "hasMore":
+			out.Values[i] = ec._CandlePage_hasMore(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "earliest":
+			out.Values[i] = ec._CandlePage_earliest(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
+		return graphql.Null
+	}
+
+	atomic.AddInt32(&ec.Deferred, int32(min(len(deferLabelToView), math.MaxInt32)))
+
+	ec.ProcessDeferredGroup(graphql.DeferredGroup{
+		Defers:   deferLabelToView,
+		Path:     graphql.GetPath(ctx),
+		FieldSet: deferredFieldSet,
+		Context:  ctx,
+	})
+
+	return out
+}
+
+var cryptoMetaImplementors = []string{"CryptoMeta"}
+
+func (ec *executionContext) _CryptoMeta(ctx context.Context, sel ast.SelectionSet, obj *model.CryptoMeta) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, cryptoMetaImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	deferredFieldSet := graphql.NewFieldSet(nil)
+	deferLabelToView := make(map[string]*graphql.FieldSetView)
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("CryptoMeta")
+		case "name":
+			out.Values[i] = ec._CryptoMeta_name(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "time":
+			out.Values[i] = ec._CryptoMeta_time(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "projection":
+			out.Values[i] = ec._CryptoMeta_projection(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "gainlose":
+			out.Values[i] = ec._CryptoMeta_gainlose(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
+		return graphql.Null
+	}
+
+	atomic.AddInt32(&ec.Deferred, int32(min(len(deferLabelToView), math.MaxInt32)))
+
+	ec.ProcessDeferredGroup(graphql.DeferredGroup{
+		Defers:   deferLabelToView,
+		Path:     graphql.GetPath(ctx),
+		FieldSet: deferredFieldSet,
+		Context:  ctx,
+	})
+
+	return out
+}
+
 var dataImplementors = []string{"Data"}
 
 func (ec *executionContext) _Data(ctx context.Context, sel ast.SelectionSet, obj *model.Data) graphql.Marshaler {
@@ -4401,6 +5707,50 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 			}
 
 			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return rrm(innerCtx) })
+		case "candles":
+			field := field
+
+			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Query_candles(ctx, field)
+				if res == graphql.Null {
+					atomic.AddUint32(&fs.Invalids, 1)
+				}
+				return res
+			}
+
+			rrm := func(ctx context.Context) graphql.Marshaler {
+				return ec.OperationContext.RootResolverMiddleware(ctx,
+					func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return rrm(innerCtx) })
+		case "cryptoMeta":
+			field := field
+
+			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Query_cryptoMeta(ctx, field)
+				if res == graphql.Null {
+					atomic.AddUint32(&fs.Invalids, 1)
+				}
+				return res
+			}
+
+			rrm := func(ctx context.Context) graphql.Marshaler {
+				return ec.OperationContext.RootResolverMiddleware(ctx,
+					func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return rrm(innerCtx) })
 		case "User":
 			field := field
 
@@ -4433,6 +5783,28 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 					}
 				}()
 				res = ec._Query_Allcrypto(ctx, field)
+				if res == graphql.Null {
+					atomic.AddUint32(&fs.Invalids, 1)
+				}
+				return res
+			}
+
+			rrm := func(ctx context.Context) graphql.Marshaler {
+				return ec.OperationContext.RootResolverMiddleware(ctx,
+					func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return rrm(innerCtx) })
+		case "bot":
+			field := field
+
+			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Query_bot(ctx, field)
 				if res == graphql.Null {
 					atomic.AddUint32(&fs.Invalids, 1)
 				}
@@ -5236,6 +6608,48 @@ func (ec *executionContext) marshalNBoolean2bool(ctx context.Context, sel ast.Se
 	return res
 }
 
+func (ec *executionContext) marshalNBot2githubᚗcomᚋchenakᚋhackernewsᚋgraphᚋmodelᚐBot(ctx context.Context, sel ast.SelectionSet, v model.Bot) graphql.Marshaler {
+	return ec._Bot(ctx, sel, &v)
+}
+
+func (ec *executionContext) marshalNBot2ᚖgithubᚗcomᚋchenakᚋhackernewsᚋgraphᚋmodelᚐBot(ctx context.Context, sel ast.SelectionSet, v *model.Bot) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			graphql.AddErrorf(ctx, "the requested element is null which the schema does not allow")
+		}
+		return graphql.Null
+	}
+	return ec._Bot(ctx, sel, v)
+}
+
+func (ec *executionContext) marshalNCandlePage2githubᚗcomᚋchenakᚋhackernewsᚋgraphᚋmodelᚐCandlePage(ctx context.Context, sel ast.SelectionSet, v model.CandlePage) graphql.Marshaler {
+	return ec._CandlePage(ctx, sel, &v)
+}
+
+func (ec *executionContext) marshalNCandlePage2ᚖgithubᚗcomᚋchenakᚋhackernewsᚋgraphᚋmodelᚐCandlePage(ctx context.Context, sel ast.SelectionSet, v *model.CandlePage) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			graphql.AddErrorf(ctx, "the requested element is null which the schema does not allow")
+		}
+		return graphql.Null
+	}
+	return ec._CandlePage(ctx, sel, v)
+}
+
+func (ec *executionContext) marshalNCryptoMeta2githubᚗcomᚋchenakᚋhackernewsᚋgraphᚋmodelᚐCryptoMeta(ctx context.Context, sel ast.SelectionSet, v model.CryptoMeta) graphql.Marshaler {
+	return ec._CryptoMeta(ctx, sel, &v)
+}
+
+func (ec *executionContext) marshalNCryptoMeta2ᚖgithubᚗcomᚋchenakᚋhackernewsᚋgraphᚋmodelᚐCryptoMeta(ctx context.Context, sel ast.SelectionSet, v *model.CryptoMeta) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			graphql.AddErrorf(ctx, "the requested element is null which the schema does not allow")
+		}
+		return graphql.Null
+	}
+	return ec._CryptoMeta(ctx, sel, v)
+}
+
 func (ec *executionContext) marshalNData2ᚕᚖgithubᚗcomᚋchenakᚋhackernewsᚋgraphᚋmodelᚐDataᚄ(ctx context.Context, sel ast.SelectionSet, v []*model.Data) graphql.Marshaler {
 	ret := graphql.MarshalSliceConcurrently(ctx, len(v), 0, false, func(ctx context.Context, i int) graphql.Marshaler {
 		fc := graphql.GetFieldContext(ctx)
@@ -5278,6 +6692,36 @@ func (ec *executionContext) marshalNFloat2float64(ctx context.Context, sel ast.S
 	return graphql.WrapContextMarshaler(ctx, res)
 }
 
+func (ec *executionContext) unmarshalNFloat2ᚕfloat64ᚄ(ctx context.Context, v any) ([]float64, error) {
+	var vSlice []any
+	vSlice = graphql.CoerceList(v)
+	var err error
+	res := make([]float64, len(vSlice))
+	for i := range vSlice {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithIndex(i))
+		res[i], err = ec.unmarshalNFloat2float64(ctx, vSlice[i])
+		if err != nil {
+			return nil, err
+		}
+	}
+	return res, nil
+}
+
+func (ec *executionContext) marshalNFloat2ᚕfloat64ᚄ(ctx context.Context, sel ast.SelectionSet, v []float64) graphql.Marshaler {
+	ret := make(graphql.Array, len(v))
+	for i := range v {
+		ret[i] = ec.marshalNFloat2float64(ctx, sel, v[i])
+	}
+
+	for _, e := range ret {
+		if e == graphql.Null {
+			return graphql.Null
+		}
+	}
+
+	return ret
+}
+
 func (ec *executionContext) marshalNFormula2ᚖgithubᚗcomᚋchenakᚋhackernewsᚋgraphᚋmodelᚐFormula(ctx context.Context, sel ast.SelectionSet, v *model.Formula) graphql.Marshaler {
 	if v == nil {
 		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
@@ -5306,6 +6750,52 @@ func (ec *executionContext) marshalNHCL2ᚖgithubᚗcomᚋchenakᚋhackernewsᚋ
 		return graphql.Null
 	}
 	return ec._HCL(ctx, sel, v)
+}
+
+func (ec *executionContext) unmarshalNInt2int(ctx context.Context, v any) (int, error) {
+	res, err := graphql.UnmarshalInt(v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) marshalNInt2int(ctx context.Context, sel ast.SelectionSet, v int) graphql.Marshaler {
+	_ = sel
+	res := graphql.MarshalInt(v)
+	if res == graphql.Null {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			graphql.AddErrorf(ctx, "the requested element is null which the schema does not allow")
+		}
+	}
+	return res
+}
+
+func (ec *executionContext) unmarshalNInt2ᚕintᚄ(ctx context.Context, v any) ([]int, error) {
+	var vSlice []any
+	vSlice = graphql.CoerceList(v)
+	var err error
+	res := make([]int, len(vSlice))
+	for i := range vSlice {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithIndex(i))
+		res[i], err = ec.unmarshalNInt2int(ctx, vSlice[i])
+		if err != nil {
+			return nil, err
+		}
+	}
+	return res, nil
+}
+
+func (ec *executionContext) marshalNInt2ᚕintᚄ(ctx context.Context, sel ast.SelectionSet, v []int) graphql.Marshaler {
+	ret := make(graphql.Array, len(v))
+	for i := range v {
+		ret[i] = ec.marshalNInt2int(ctx, sel, v[i])
+	}
+
+	for _, e := range ret {
+		if e == graphql.Null {
+			return graphql.Null
+		}
+	}
+
+	return ret
 }
 
 func (ec *executionContext) marshalNOther2ᚖgithubᚗcomᚋchenakᚋhackernewsᚋgraphᚋmodelᚐOther(ctx context.Context, sel ast.SelectionSet, v *model.Other) graphql.Marshaler {
@@ -5617,6 +7107,23 @@ func (ec *executionContext) marshalOBoolean2ᚖbool(ctx context.Context, sel ast
 	_ = ctx
 	res := graphql.MarshalBoolean(*v)
 	return res
+}
+
+func (ec *executionContext) unmarshalOFloat2ᚖfloat64(ctx context.Context, v any) (*float64, error) {
+	if v == nil {
+		return nil, nil
+	}
+	res, err := graphql.UnmarshalFloatContext(ctx, v)
+	return &res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) marshalOFloat2ᚖfloat64(ctx context.Context, sel ast.SelectionSet, v *float64) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	_ = sel
+	res := graphql.MarshalFloatContext(*v)
+	return graphql.WrapContextMarshaler(ctx, res)
 }
 
 func (ec *executionContext) unmarshalOString2ᚖstring(ctx context.Context, v any) (*string, error) {
