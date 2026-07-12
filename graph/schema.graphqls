@@ -44,14 +44,31 @@ type HCL {
 	Close: Float!
 	Volume: Float!
 }
-type Formula {
-	rsi: Float!
-	rsiK: Float!
-	rsiD: Float!
-	aroonu: Float!
-	aroond: Float!
-	macd: Float!
+type Rsi {
+	value: Float!
+	k: Float!
+	d: Float!
+}
+type Aroon {
+	up: Float!
+	down: Float!
+}
+type Macd {
+	line: Float!
 	histogram: Float!
+}
+type Zscore {
+	value: Float!
+	mid: Float!
+	hi: Float!
+	lo: Float!
+}
+type Formula {
+	rsi: Rsi!
+	aroon: Aroon!
+	macd: Macd!
+	z: Zscore!
+	ema: Float!
 }
 type Ai {
 	bigmome: Bigmome!
@@ -119,6 +136,8 @@ type Bot {
 	exits: [Int!]!
 	swingBuys: [Int!]!
 	swingSells: [Int!]!
+	cyclePhase: String!
+	cycleDay: Int!
 }
 type User {
 	nameuser: String!
@@ -137,6 +156,13 @@ type Query {
 	candles(name: String!, before: Float, limit: Int!): CandlePage!
 	cryptoMeta(name: String!): CryptoMeta!
 	User(nameuser: String!): User!
-	Allcrypto: [String!]!
+	# Registered assets split by class: crypto pairs (quoted in USDT) and
+	# equities/ETFs (quoted in USD).
+	symbols: Symbols!
 	bot(name: String!): Bot!
+}
+
+type Symbols {
+	crypto: [String!]!
+	stocks: [String!]!
 }
