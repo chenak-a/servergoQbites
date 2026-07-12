@@ -144,6 +144,85 @@ func Data(namecrypto string) *model.Crypto {
 
 }
 
+// CryptoMeta returns just the per-asset header metadata (name, timeframe,
+// projection, gain/loss) without loading any candles — used by the header and
+// the watchlist so the UI paints instantly.
+func CryptoMeta(namecrypto string) *model.CryptoMeta {
+	client, ctx, cancel := connect()
+	defer cancel()
+	defer client.Disconnect(ctx)
+
+	var doc bson.M
+	client.Database("cryptoDatabase").Collection("datastore").
+		FindOne(ctx, bson.M{"name": namecrypto}).Decode(&doc)
+	tf, _ := doc["TimeFrame"].(primitive.M)
+	gl, _ := doc["gainlose"].(primitive.M)
+	return &model.CryptoMeta{
+		Name:       asString(doc["name"]),
+		Time:       asString(tf["heur"]),
+		Projection: asFloat(doc["projection"]),
+		Gainlose:   &model.GainLoss{M: asFloat(gl["1M"]), D: asFloat(gl["24h"]), W: asFloat(gl["1w"])},
+	}
+}
+
+// Candles returns a time-windowed page of candles for lazy / infinite-scroll
+// loading. With `before == nil` it returns the most recent `limit` bars; pass
+// the oldest loaded opentime as `before` to backfill the next older page. The
+// DB does the sort+limit (indexed on "Close time"), so the server never
+// materialises the whole multi-year series for a single view.
+func Candles(namecrypto string, before *float64, limit int) *model.CandlePage {
+	empty := &model.CandlePage{Data: []*model.Data{}, HasMore: false, Earliest: 0}
+	client, ctx, cancel := connect()
+	defer cancel()
+	defer client.Disconnect(ctx)
+
+	var ds bson.M
+	client.Database("cryptoDatabase").Collection("datastore").
+		FindOne(ctx, bson.M{"name": namecrypto}).Decode(&ds)
+	tf, _ := ds["TimeFrame"].(primitive.M)
+	dataid := asString(tf["dataid"])
+	if dataid == "" {
+		return empty
+	}
+	coll := client.Database("cryptoDatabase").Collection(dataid)
+	// Idempotent; keeps the descending sort+limit index-backed as history grows.
+	coll.Indexes().CreateOne(ctx, mongo.IndexModel{Keys: bson.D{{Key: "Close time", Value: 1}}})
+
+	if limit <= 0 {
+		limit = 1500
+	}
+
+	// Backfill floor: opentime of the very first stored bar.
+	var earliestDoc bson.M
+	coll.FindOne(ctx, bson.M{},
+		options.FindOne().SetSort(bson.D{{Key: "Close time", Value: 1}})).Decode(&earliestDoc)
+	earliest := asFloat(earliestDoc["Close time"])
+
+	filter := bson.M{}
+	if before != nil {
+		filter = bson.M{"Close time": bson.M{"$lt": *before}}
+	}
+	cursor, err := coll.Find(ctx, filter, options.Find().
+		SetSort(bson.D{{Key: "Close time", Value: -1}}).
+		SetLimit(int64(limit)))
+	if err != nil {
+		return empty
+	}
+	var desc []*model.Data
+	for cursor.Next(ctx) {
+		var d bson.M
+		cursor.Decode(&d)
+		desc = append(desc, candleFromDoc(d))
+	}
+	// The query is newest-first; reverse to ascending for the chart.
+	data := make([]*model.Data, len(desc))
+	for i := range desc {
+		data[len(desc)-1-i] = desc[i]
+	}
+	hasMore := len(data) > 0 && data[0].Hcl.Opentime > earliest
+	return &model.CandlePage{Data: data, HasMore: hasMore, Earliest: earliest}
+}
+
 // Bot returns the backend-computed trading-bot state for an asset. The Python
 // pipeline stores it in a dedicated collection referenced by
 // datastore.TimeFrame.botid; here we just read and shape it for GraphQL.

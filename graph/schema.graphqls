@@ -15,6 +15,22 @@ type Data {
 	formula: Formula!
 	ai: Ai!
 }
+# A window of candles for lazy / infinite-scroll loading. `data` is ascending by
+# time; `hasMore` is true when older bars exist before the window; `earliest` is
+# the opentime of the very first stored bar (the backfill floor).
+type CandlePage {
+	data: [Data!]!
+	hasMore: Boolean!
+	earliest: Float!
+}
+# Lean per-asset metadata (no candle array) so the header/watchlist can render
+# without transferring the full multi-year series.
+type CryptoMeta {
+	name: String!
+	time: String!
+	projection: Float!
+	gainlose: GainLoss!
+}
 type GainLoss{
 	M: Float!
 	W: Float!
@@ -116,6 +132,10 @@ type balance {
 
 type Query {
   	crypto(name: String!): crypto!
+	# Lazy-loaded candle window. `before` is a cursor (opentime); omit it for the
+	# most recent `limit` bars, or pass the oldest loaded opentime to backfill.
+	candles(name: String!, before: Float, limit: Int!): CandlePage!
+	cryptoMeta(name: String!): CryptoMeta!
 	User(nameuser: String!): User!
 	Allcrypto: [String!]!
 	bot(name: String!): Bot!

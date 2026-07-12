@@ -18,6 +18,16 @@ func (r *queryResolver) Crypto(ctx context.Context, name string) (*model.Crypto,
 	return database.Data(name), nil
 }
 
+// Candles is the resolver for the candles field.
+func (r *queryResolver) Candles(ctx context.Context, name string, before *float64, limit int) (*model.CandlePage, error) {
+	return database.Candles(name, before, limit), nil
+}
+
+// CryptoMeta is the resolver for the cryptoMeta field.
+func (r *queryResolver) CryptoMeta(ctx context.Context, name string) (*model.CryptoMeta, error) {
+	return database.CryptoMeta(name), nil
+}
+
 // User is the resolver for the User field.
 func (r *queryResolver) User(ctx context.Context, nameuser string) (*model.User, error) {
 	return database.User(nameuser), nil

@@ -44,6 +44,19 @@ type Bot struct {
 	SwingSells []int     `json:"swingSells"`
 }
 
+type CandlePage struct {
+	Data     []*Data `json:"data"`
+	HasMore  bool    `json:"hasMore"`
+	Earliest float64 `json:"earliest"`
+}
+
+type CryptoMeta struct {
+	Name       string    `json:"name"`
+	Time       string    `json:"time"`
+	Projection float64   `json:"projection"`
+	Gainlose   *GainLoss `json:"gainlose"`
+}
+
 type Data struct {
 	Hcl     *Hcl     `json:"hcl"`
 	Formula *Formula `json:"formula"`
