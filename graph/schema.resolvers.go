@@ -33,9 +33,10 @@ func (r *queryResolver) User(ctx context.Context, nameuser string) (*model.User,
 	return database.User(nameuser), nil
 }
 
-// Allcrypto is the resolver for the Allcrypto field.
-func (r *queryResolver) Allcrypto(ctx context.Context) ([]string, error) {
-	return database.ListCrypto(), nil
+// Symbols is the resolver for the symbols field.
+func (r *queryResolver) Symbols(ctx context.Context) (*model.Symbols, error) {
+	crypto, stocks := database.ListSymbols()
+	return &model.Symbols{Crypto: crypto, Stocks: stocks}, nil
 }
 
 // Bot is the resolver for the bot field.

@@ -11,6 +11,11 @@ type Ai struct {
 	Other     *Other     `json:"other"`
 }
 
+type Aroon struct {
+	Up   float64 `json:"up"`
+	Down float64 `json:"down"`
+}
+
 type Buy struct {
 	Ambb  float64 `json:"ambb"`
 	Ambb5 float64 `json:"ambb5"`
@@ -42,6 +47,8 @@ type Bot struct {
 	Exits      []int     `json:"exits"`
 	SwingBuys  []int     `json:"swingBuys"`
 	SwingSells []int     `json:"swingSells"`
+	CyclePhase string    `json:"cyclePhase"`
+	CycleDay   int       `json:"cycleDay"`
 }
 
 type CandlePage struct {
@@ -64,13 +71,11 @@ type Data struct {
 }
 
 type Formula struct {
-	Rsi       float64 `json:"rsi"`
-	RsiK      float64 `json:"rsiK"`
-	RsiD      float64 `json:"rsiD"`
-	Aroonu    float64 `json:"aroonu"`
-	Aroond    float64 `json:"aroond"`
-	Macd      float64 `json:"macd"`
-	Histogram float64 `json:"histogram"`
+	Rsi   *Rsi    `json:"rsi"`
+	Aroon *Aroon  `json:"aroon"`
+	Macd  *Macd   `json:"macd"`
+	Z     *Zscore `json:"z"`
+	Ema   float64 `json:"ema"`
 }
 
 type GainLoss struct {
@@ -88,6 +93,11 @@ type Hcl struct {
 	Volume   float64 `json:"Volume"`
 }
 
+type Macd struct {
+	Line      float64 `json:"line"`
+	Histogram float64 `json:"histogram"`
+}
+
 type Other struct {
 	Amo         float64 `json:"amo"`
 	Amo1        float64 `json:"amo1"`
@@ -96,6 +106,12 @@ type Other struct {
 }
 
 type Query struct {
+}
+
+type Rsi struct {
+	Value float64 `json:"value"`
+	K     float64 `json:"k"`
+	D     float64 `json:"d"`
 }
 
 type Sell struct {
@@ -111,9 +127,21 @@ type Smallmome struct {
 	Ci  float64 `json:"ci"`
 }
 
+type Symbols struct {
+	Crypto []string `json:"crypto"`
+	Stocks []string `json:"stocks"`
+}
+
 type User struct {
 	Nameuser string     `json:"nameuser"`
 	Balance  []*Balance `json:"balance"`
+}
+
+type Zscore struct {
+	Value float64 `json:"value"`
+	Mid   float64 `json:"mid"`
+	Hi    float64 `json:"hi"`
+	Lo    float64 `json:"lo"`
 }
 
 type Balance struct {

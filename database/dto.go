@@ -35,22 +35,48 @@ type datastoreDoc struct {
 }
 
 // candleDoc is one OHLCV bar plus the indicators and signal the API exposes.
+// Indicator families are grouped into their own typed blocks rather than a flat
+// list of floats. Mongo stores the columns flat, so each block is decoded with
+// `,inline` (the driver flattens its bson keys into the parent document).
+type rsiBlock struct {
+	Value float64 `bson:"rsi"`
+	K     float64 `bson:"rsiK"`
+	D     float64 `bson:"rsiD"`
+}
+
+type aroonBlock struct {
+	Up   float64 `bson:"aroonu"`
+	Down float64 `bson:"aroond"`
+}
+
+type macdBlock struct {
+	Line      float64 `bson:"macd"`
+	Histogram float64 `bson:"histogram"`
+}
+
+// zscoreBlock is the 30-day causal z-score plus its Gaussian mean-reversion
+// bands in price space (mid=μ, hi=μ+2σ, lo=μ-2σ).
+type zscoreBlock struct {
+	Value float64 `bson:"z"`
+	Mid   float64 `bson:"zMid"`
+	Hi    float64 `bson:"zHi"`
+	Lo    float64 `bson:"zLo"`
+}
+
 type candleDoc struct {
-	CloseTime   float64 `bson:"Close time"`
-	Open        float64 `bson:"Open"`
-	High        float64 `bson:"High"`
-	Low         float64 `bson:"Low"`
-	Close       float64 `bson:"Close"`
-	Volume      float64 `bson:"Volume"`
-	Rsi         float64 `bson:"rsi"`
-	RsiK        float64 `bson:"rsiK"`
-	RsiD        float64 `bson:"rsiD"`
-	AroonUp     float64 `bson:"aroonu"`
-	AroonDown   float64 `bson:"aroond"`
-	Macd        float64 `bson:"macd"`
-	Histogram   float64 `bson:"histogram"`
-	Signal      float64 `bson:"BUYSELL"`
-	SignalLabel string  `bson:"BUYSELLTYPE"`
+	CloseTime   float64     `bson:"Close time"`
+	Open        float64     `bson:"Open"`
+	High        float64     `bson:"High"`
+	Low         float64     `bson:"Low"`
+	Close       float64     `bson:"Close"`
+	Volume      float64     `bson:"Volume"`
+	Rsi         rsiBlock    `bson:",inline"`
+	Aroon       aroonBlock  `bson:",inline"`
+	Macd        macdBlock   `bson:",inline"`
+	Z           zscoreBlock `bson:",inline"`
+	Ema         float64     `bson:"ema"`
+	Signal      float64     `bson:"BUYSELL"`
+	SignalLabel string      `bson:"BUYSELLTYPE"`
 }
 
 func (c candleDoc) toModel() *model.Data {
@@ -60,9 +86,11 @@ func (c candleDoc) toModel() *model.Data {
 			Low: c.Low, Close: c.Close, Volume: c.Volume,
 		},
 		Formula: &model.Formula{
-			Rsi: c.Rsi, RsiK: c.RsiK, RsiD: c.RsiD,
-			Aroonu: c.AroonUp, Aroond: c.AroonDown,
-			Macd: c.Macd, Histogram: c.Histogram,
+			Rsi:   &model.Rsi{Value: c.Rsi.Value, K: c.Rsi.K, D: c.Rsi.D},
+			Aroon: &model.Aroon{Up: c.Aroon.Up, Down: c.Aroon.Down},
+			Macd:  &model.Macd{Line: c.Macd.Line, Histogram: c.Macd.Histogram},
+			Z:     &model.Zscore{Value: c.Z.Value, Mid: c.Z.Mid, Hi: c.Z.Hi, Lo: c.Z.Lo},
+			Ema:   c.Ema,
 		},
 		// The DNN ensemble columns (amb*, BUY*, ww*, ...) were retired; only the
 		// BUYSELL signal and its label remain, exposed under Ai.Other.
@@ -98,6 +126,8 @@ type botDoc struct {
 	Exits      []int     `bson:"exits"`
 	SwingBuys  []int     `bson:"swingBuys"`
 	SwingSells []int     `bson:"swingSells"`
+	CyclePhase string    `bson:"cyclePhase"`
+	CycleDay   int       `bson:"cycleDay"`
 }
 
 func (b botDoc) toModel() *model.Bot {
@@ -119,6 +149,8 @@ func (b botDoc) toModel() *model.Bot {
 		Exits:      b.Exits,
 		SwingBuys:  b.SwingBuys,
 		SwingSells: b.SwingSells,
+		CyclePhase: b.CyclePhase,
+		CycleDay:   b.CycleDay,
 	}
 }
 

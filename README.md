@@ -17,10 +17,13 @@ go run server.go
 ```
 
 ## :building_construction: Usage
-### get list of all crypto coin in the database
+### get the registered assets split by class (crypto vs stocks)
 ```javascript
 query{
-  Allcrypto
+  symbols {
+    crypto
+    stocks
+  }
 }
 ```
 ### get data of specific crypto 

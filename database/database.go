@@ -3,6 +3,7 @@ package database
 import (
 	"context"
 	"os"
+	"strings"
 	"time"
 
 	"github.com/chenak/hackernews/graph/model"
@@ -181,21 +182,27 @@ func User(name string) *model.User {
 	return u.toModel()
 }
 
-// ListCrypto returns the names of every registered asset.
-func ListCrypto() []string {
+// ListSymbols returns the registered assets split by class: crypto pairs are
+// quoted in USDT, everything else is treated as an equity/ETF. Both slices are
+// non-nil so the GraphQL fields always marshal as [] rather than null.
+func ListSymbols() (crypto []string, stocks []string) {
+	crypto, stocks = []string{}, []string{}
 	client, ctx, cancel := connect()
 	defer cancel()
 	defer client.Disconnect(ctx)
 
 	cursor, err := client.Database(databaseName).Collection(datastoreColl).Find(ctx, bson.M{})
 	if err != nil {
-		return nil
+		return crypto, stocks
 	}
-	var list []string
 	for cursor.Next(ctx) {
 		var ds datastoreDoc
 		cursor.Decode(&ds)
-		list = append(list, ds.Name)
+		if strings.HasSuffix(strings.ToUpper(ds.Name), "USDT") {
+			crypto = append(crypto, ds.Name)
+		} else {
+			stocks = append(stocks, ds.Name)
+		}
 	}
-	return list
+	return crypto, stocks
 }
