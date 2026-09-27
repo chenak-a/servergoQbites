@@ -115,6 +115,7 @@ type Other {
 	amo1: Float!
 	BUYSELL: Float!
 	BUYSELLevel: String!
+	BUYSELLconf: Float!
 }
 # Backend-computed trading-bot state (regime + signals + backtest). Computed in
 # the Python pipeline and merely displayed by the frontend.

@@ -77,6 +77,7 @@ type candleDoc struct {
 	Ema         float64     `bson:"ema"`
 	Signal      float64     `bson:"BUYSELL"`
 	SignalLabel string      `bson:"BUYSELLTYPE"`
+	Confidence  float64     `bson:"BUYSELLCONF"`
 }
 
 func (c candleDoc) toModel() *model.Data {
@@ -100,7 +101,7 @@ func (c candleDoc) toModel() *model.Data {
 			Smallmome: &model.Smallmome{},
 			Buy:       &model.Buy{},
 			Mome:      &model.Mome{},
-			Other:     &model.Other{Buysell: c.Signal, BUYSELLevel: c.SignalLabel},
+			Other:     &model.Other{Buysell: c.Signal, BUYSELLevel: c.SignalLabel, BUYSELLconf: c.Confidence},
 		},
 	}
 }

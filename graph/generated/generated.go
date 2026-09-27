@@ -134,6 +134,7 @@ type ComplexityRoot struct {
 	Other struct {
 		Amo         func(childComplexity int) int
 		Amo1        func(childComplexity int) int
+		BUYSELLconf func(childComplexity int) int
 		BUYSELLevel func(childComplexity int) int
 		Buysell     func(childComplexity int) int
 	}
@@ -623,6 +624,12 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 		}
 
 		return e.ComplexityRoot.Other.Amo1(childComplexity), true
+	case "Other.BUYSELLconf":
+		if e.ComplexityRoot.Other.BUYSELLconf == nil {
+			break
+		}
+
+		return e.ComplexityRoot.Other.BUYSELLconf(childComplexity), true
 	case "Other.BUYSELLevel":
 		if e.ComplexityRoot.Other.BUYSELLevel == nil {
 			break
@@ -1090,6 +1097,7 @@ type Other {
 	amo1: Float!
 	BUYSELL: Float!
 	BUYSELLevel: String!
+	BUYSELLconf: Float!
 }
 # Backend-computed trading-bot state (regime + signals + backtest). Computed in
 # the Python pipeline and merely displayed by the frontend.
@@ -1351,6 +1359,8 @@ func (ec *executionContext) childFields_Other(ctx context.Context, field graphql
 		return ec.fieldContext_Other_BUYSELL(ctx, field)
 	case "BUYSELLevel":
 		return ec.fieldContext_Other_BUYSELLevel(ctx, field)
+	case "BUYSELLconf":
+		return ec.fieldContext_Other_BUYSELLconf(ctx, field)
 	}
 	return nil, fmt.Errorf("no field named %q was found under type Other", field.Name)
 }
@@ -3356,6 +3366,29 @@ func (ec *executionContext) _Other_BUYSELLevel(ctx context.Context, field graphq
 }
 func (ec *executionContext) fieldContext_Other_BUYSELLevel(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	return graphql.NewScalarFieldContext("Other", field, false, false, errors.New("field of type String does not have child fields"))
+}
+
+func (ec *executionContext) _Other_BUYSELLconf(ctx context.Context, field graphql.CollectedField, obj *model.Other) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return ec.fieldContext_Other_BUYSELLconf(ctx, field)
+		},
+		func(ctx context.Context) (any, error) {
+			return obj.BUYSELLconf, nil
+		},
+		nil,
+		func(ctx context.Context, selections ast.SelectionSet, v float64) graphql.Marshaler {
+			return ec.marshalNFloat2float64(ctx, selections, v)
+		},
+		true,
+		true,
+	)
+}
+func (ec *executionContext) fieldContext_Other_BUYSELLconf(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	return graphql.NewScalarFieldContext("Other", field, false, false, errors.New("field of type Float does not have child fields"))
 }
 
 func (ec *executionContext) _Query_crypto(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
@@ -6264,6 +6297,11 @@ func (ec *executionContext) _Other(ctx context.Context, sel ast.SelectionSet, ob
 			}
 		case "BUYSELLevel":
 			out.Values[i] = ec._Other_BUYSELLevel(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "BUYSELLconf":
+			out.Values[i] = ec._Other_BUYSELLconf(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
 				out.Invalids++
 			}
