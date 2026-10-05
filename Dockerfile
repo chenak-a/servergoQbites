@@ -2,6 +2,11 @@ FROM golang:1.25 AS build
 
 WORKDIR /src
 
+# Trust corporate Zscaler CA for TLS-inspected HTTPS
+COPY zscaler-root-ca.crt /usr/local/share/ca-certificates/zscaler-root-ca.crt
+RUN update-ca-certificates
+ENV SSL_CERT_FILE=/etc/ssl/certs/ca-certificates.crt
+
 COPY go.mod go.sum ./
 RUN go mod download
 
