@@ -13,13 +13,13 @@ RUN go mod download
 COPY . .
 RUN CGO_ENABLED=0 GOOS=linux go build -o /server .
 
-FROM gcr.io/distroless/static-debian12
+FROM gcr.io/distroless/static-debian12:nonroot
 
-ENV PORT=8080 \
+ENV PORT=8090 \
     MONGO_URI=mongodb://mongo:27017
 
 COPY --from=build /server /server
 
-EXPOSE 8080
+EXPOSE 8090
 
 ENTRYPOINT ["/server"]

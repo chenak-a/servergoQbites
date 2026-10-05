@@ -8,40 +8,42 @@ package graph
 import (
 	"context"
 
-	"github.com/chenak/hackernews/database"
 	"github.com/chenak/hackernews/graph/generated"
 	"github.com/chenak/hackernews/graph/model"
 )
 
 // Crypto is the resolver for the crypto field.
 func (r *queryResolver) Crypto(ctx context.Context, name string) (*model.Crypto, error) {
-	return database.Data(name), nil
+	return r.Store.Data(ctx, name)
 }
 
 // Candles is the resolver for the candles field.
 func (r *queryResolver) Candles(ctx context.Context, name string, before *float64, limit int) (*model.CandlePage, error) {
-	return database.Candles(name, before, limit), nil
+	return r.Store.Candles(ctx, name, before, limit)
 }
 
 // CryptoMeta is the resolver for the cryptoMeta field.
 func (r *queryResolver) CryptoMeta(ctx context.Context, name string) (*model.CryptoMeta, error) {
-	return database.CryptoMeta(name), nil
+	return r.Store.CryptoMeta(ctx, name)
 }
 
 // User is the resolver for the User field.
 func (r *queryResolver) User(ctx context.Context, nameuser string) (*model.User, error) {
-	return database.User(nameuser), nil
+	return r.Store.User(ctx, nameuser)
 }
 
 // Symbols is the resolver for the symbols field.
 func (r *queryResolver) Symbols(ctx context.Context) (*model.Symbols, error) {
-	crypto, stocks := database.ListSymbols()
+	crypto, stocks, err := r.Store.ListSymbols(ctx)
+	if err != nil {
+		return nil, err
+	}
 	return &model.Symbols{Crypto: crypto, Stocks: stocks}, nil
 }
 
 // Bot is the resolver for the bot field.
 func (r *queryResolver) Bot(ctx context.Context, name string) (*model.Bot, error) {
-	return database.Bot(name), nil
+	return r.Store.Bot(ctx, name)
 }
 
 // Query returns generated.QueryResolver implementation.

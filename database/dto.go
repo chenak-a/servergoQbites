@@ -64,7 +64,7 @@ type zscoreBlock struct {
 }
 
 type candleDoc struct {
-	CloseTime   float64     `bson:"Close time"`
+	OpenTime    float64     `bson:"Open time"`
 	Open        float64     `bson:"Open"`
 	High        float64     `bson:"High"`
 	Low         float64     `bson:"Low"`
@@ -83,7 +83,7 @@ type candleDoc struct {
 func (c candleDoc) toModel() *model.Data {
 	return &model.Data{
 		Hcl: &model.Hcl{
-			Opentime: c.CloseTime, Open: c.Open, High: c.High,
+			Opentime: c.OpenTime, Open: c.Open, High: c.High,
 			Low: c.Low, Close: c.Close, Volume: c.Volume,
 		},
 		Formula: &model.Formula{

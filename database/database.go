@@ -2,8 +2,9 @@ package database
 
 import (
 	"context"
-	"os"
-	"strings"
+	"errors"
+	"fmt"
+	"sort"
 	"time"
 
 	"github.com/chenak/hackernews/graph/model"
@@ -16,193 +17,210 @@ const (
 	databaseName       = "cryptoDatabase"
 	datastoreColl      = "datastore"
 	userColl           = "usercrypto"
-	closeTimeField     = "Close time"
+	openTimeField      = "Open time"
 	defaultCandleLimit = 1500
+	maxCandleLimit     = 5000
 	stanceUnknown      = "UNKNOWN"
 	connectTimeout     = 10 * time.Second
 )
 
+// ErrNotFound is returned when an asset is not registered in the datastore.
+var ErrNotFound = errors.New("not found")
+
 // botDocKey selects the single precomputed bot-state document in a bot collection.
 var botDocKey = bson.M{"_key": "bot"}
 
-// byName is the standard filter for looking an asset up in the datastore.
-func byName(name string) bson.M { return bson.M{"name": name} }
-
-func connect() (*mongo.Client, context.Context, context.CancelFunc) {
-	ctx, cancel := context.WithTimeout(context.Background(), connectTimeout)
-	mongoURI := os.Getenv("MONGO_URI")
-	if mongoURI == "" {
-		mongoURI = "mongodb://localhost:27017"
-	}
-	client, err := mongo.Connect(ctx, options.Client().ApplyURI(mongoURI))
-	if err != nil {
-		cancel()
-		panic(err)
-	}
-	return client, ctx, cancel
+// Store reads the collections the Python pipeline writes. It holds one
+// connection pool for the life of the process and is safe for concurrent use.
+type Store struct {
+	db *mongo.Database
 }
 
-// loadDatastore fetches the asset-registry document for an asset. A missing
-// document decodes to the zero value, so callers can safely inspect it.
-func loadDatastore(ctx context.Context, client *mongo.Client, name string) datastoreDoc {
-	var ds datastoreDoc
-	client.Database(databaseName).Collection(datastoreColl).
-		FindOne(ctx, byName(name)).Decode(&ds)
-	return ds
-}
-
-// Data returns an asset's header metadata together with its full candle series.
-func Data(namecrypto string) *model.Crypto {
-	client, ctx, cancel := connect()
+// Connect opens the shared client and verifies the server is reachable.
+func Connect(ctx context.Context, uri string) (*Store, func(context.Context) error, error) {
+	ctx, cancel := context.WithTimeout(ctx, connectTimeout)
 	defer cancel()
-	defer client.Disconnect(ctx)
-
-	ds := loadDatastore(ctx, client, namecrypto)
-
-	var candles []*model.Data
-	cursor, err := client.Database(databaseName).Collection(ds.TimeFrame.CandleColl).Find(ctx, bson.M{})
-	if err == nil {
-		for cursor.Next(ctx) {
-			var c candleDoc
-			cursor.Decode(&c)
-			candles = append(candles, c.toModel())
-		}
+	client, err := mongo.Connect(ctx, options.Client().ApplyURI(uri))
+	if err != nil {
+		return nil, nil, fmt.Errorf("connect mongo: %w", err)
 	}
+	if err := client.Ping(ctx, nil); err != nil {
+		return nil, nil, fmt.Errorf("ping mongo: %w", err)
+	}
+	return &Store{db: client.Database(databaseName)}, client.Disconnect, nil
+}
 
+// Ping reports whether the database is currently reachable.
+func (s *Store) Ping(ctx context.Context) error {
+	return s.db.Client().Ping(ctx, nil)
+}
+
+// loadDatastore fetches the asset-registry document for an asset.
+func (s *Store) loadDatastore(ctx context.Context, name string) (datastoreDoc, error) {
+	var ds datastoreDoc
+	err := s.db.Collection(datastoreColl).FindOne(ctx, bson.M{"name": name}).Decode(&ds)
+	if errors.Is(err, mongo.ErrNoDocuments) {
+		return ds, fmt.Errorf("asset %q: %w", name, ErrNotFound)
+	}
+	return ds, err
+}
+
+func decodeCandles(ctx context.Context, cursor *mongo.Cursor) ([]*model.Data, error) {
+	defer cursor.Close(ctx)
+	var out []*model.Data
+	for cursor.Next(ctx) {
+		var c candleDoc
+		if err := cursor.Decode(&c); err != nil {
+			return nil, err
+		}
+		out = append(out, c.toModel())
+	}
+	return out, cursor.Err()
+}
+
+// Data returns an asset's header metadata together with its most recent
+// `maxCandleLimit` candles (ascending).
+func (s *Store) Data(ctx context.Context, name string) (*model.Crypto, error) {
+	ds, err := s.loadDatastore(ctx, name)
+	if err != nil {
+		return nil, err
+	}
+	page, err := s.Candles(ctx, name, nil, maxCandleLimit)
+	if err != nil {
+		return nil, err
+	}
 	return &model.Crypto{
 		Name:       ds.Name,
 		Time:       ds.TimeFrame.Label,
 		Projection: ds.Projection,
 		Gainlose:   ds.GainLose.toModel(),
-		Data:       candles,
-	}
+		Data:       page.Data,
+	}, nil
 }
 
 // CryptoMeta returns just the per-asset header metadata (name, timeframe,
-// projection, gain/loss) without loading any candles — used by the header and
-// the watchlist so the UI paints instantly.
-func CryptoMeta(namecrypto string) *model.CryptoMeta {
-	client, ctx, cancel := connect()
-	defer cancel()
-	defer client.Disconnect(ctx)
-
-	ds := loadDatastore(ctx, client, namecrypto)
+// projection, gain/loss) without loading any candles.
+func (s *Store) CryptoMeta(ctx context.Context, name string) (*model.CryptoMeta, error) {
+	ds, err := s.loadDatastore(ctx, name)
+	if err != nil {
+		return nil, err
+	}
 	return &model.CryptoMeta{
 		Name:       ds.Name,
 		Time:       ds.TimeFrame.Label,
 		Projection: ds.Projection,
 		Gainlose:   ds.GainLose.toModel(),
-	}
+	}, nil
 }
 
-// Candles returns a time-windowed page of candles for lazy / infinite-scroll
-// loading. With `before == nil` it returns the most recent `limit` bars; pass
-// the oldest loaded opentime as `before` to backfill the next older page. The
-// DB does the sort+limit (indexed on "Close time"), so the server never
-// materialises the whole multi-year series for a single view.
-func Candles(namecrypto string, before *float64, limit int) *model.CandlePage {
-	empty := &model.CandlePage{Data: []*model.Data{}, HasMore: false, Earliest: 0}
-	client, ctx, cancel := connect()
-	defer cancel()
-	defer client.Disconnect(ctx)
-
-	ds := loadDatastore(ctx, client, namecrypto)
-	if ds.TimeFrame.CandleColl == "" {
-		return empty
+// Candles returns a page of candles for lazy / infinite-scroll loading. With
+// `before == nil` it returns the most recent `limit` bars; pass the oldest
+// loaded opentime as `before` to backfill the next older page. Sort and limit
+// run in Mongo on the "Open time" index the pipeline maintains.
+func (s *Store) Candles(ctx context.Context, name string, before *float64, limit int) (*model.CandlePage, error) {
+	ds, err := s.loadDatastore(ctx, name)
+	if err != nil {
+		return nil, err
 	}
-	coll := client.Database(databaseName).Collection(ds.TimeFrame.CandleColl)
-	// Idempotent; keeps the descending sort+limit index-backed as history grows.
-	coll.Indexes().CreateOne(ctx, mongo.IndexModel{Keys: bson.D{{Key: closeTimeField, Value: 1}}})
-
 	if limit <= 0 {
 		limit = defaultCandleLimit
 	}
+	limit = min(limit, maxCandleLimit)
+	coll := s.db.Collection(ds.TimeFrame.CandleColl)
 
-	// Backfill floor: opentime of the very first stored bar.
-	var earliestDoc candleDoc
-	coll.FindOne(ctx, bson.M{},
-		options.FindOne().SetSort(bson.D{{Key: closeTimeField, Value: 1}})).Decode(&earliestDoc)
-	earliest := earliestDoc.CloseTime
+	var first candleDoc
+	err = coll.FindOne(ctx, bson.M{},
+		options.FindOne().SetSort(bson.D{{Key: openTimeField, Value: 1}})).Decode(&first)
+	if errors.Is(err, mongo.ErrNoDocuments) {
+		return &model.CandlePage{Data: []*model.Data{}}, nil
+	}
+	if err != nil {
+		return nil, err
+	}
 
 	filter := bson.M{}
 	if before != nil {
-		filter = bson.M{closeTimeField: bson.M{"$lt": *before}}
+		filter = bson.M{openTimeField: bson.M{"$lt": *before}}
 	}
 	cursor, err := coll.Find(ctx, filter, options.Find().
-		SetSort(bson.D{{Key: closeTimeField, Value: -1}}).
+		SetSort(bson.D{{Key: openTimeField, Value: -1}}).
 		SetLimit(int64(limit)))
 	if err != nil {
-		return empty
+		return nil, err
 	}
-	var desc []*model.Data
-	for cursor.Next(ctx) {
-		var c candleDoc
-		cursor.Decode(&c)
-		desc = append(desc, c.toModel())
+	desc, err := decodeCandles(ctx, cursor)
+	if err != nil {
+		return nil, err
 	}
 	// The query is newest-first; reverse to ascending for the chart.
 	data := make([]*model.Data, len(desc))
 	for i := range desc {
 		data[len(desc)-1-i] = desc[i]
 	}
-	hasMore := len(data) > 0 && data[0].Hcl.Opentime > earliest
-	return &model.CandlePage{Data: data, HasMore: hasMore, Earliest: earliest}
+	hasMore := len(data) > 0 && data[0].Hcl.Opentime > first.OpenTime
+	return &model.CandlePage{Data: data, HasMore: hasMore, Earliest: first.OpenTime}, nil
 }
 
-// Bot returns the backend-computed trading-bot state for an asset. The Python
-// pipeline stores it in a dedicated collection referenced by
-// datastore.TimeFrame.botid; here we just read and shape it for GraphQL.
-func Bot(namecrypto string) *model.Bot {
-	client, ctx, cancel := connect()
-	defer cancel()
-	defer client.Disconnect(ctx)
-
-	ds := loadDatastore(ctx, client, namecrypto)
+// Bot returns the backend-computed trading-bot state for an asset, or an
+// UNKNOWN stance when the pipeline has not produced one.
+func (s *Store) Bot(ctx context.Context, name string) (*model.Bot, error) {
+	ds, err := s.loadDatastore(ctx, name)
+	if err != nil {
+		return nil, err
+	}
 	if ds.TimeFrame.BotColl == "" {
-		return &model.Bot{Stance: stanceUnknown}
+		return &model.Bot{Stance: stanceUnknown}, nil
 	}
-
 	var bot botDoc
-	if err := client.Database(databaseName).Collection(ds.TimeFrame.BotColl).
-		FindOne(ctx, botDocKey).Decode(&bot); err != nil {
-		return &model.Bot{Stance: stanceUnknown}
+	err = s.db.Collection(ds.TimeFrame.BotColl).FindOne(ctx, botDocKey).Decode(&bot)
+	if errors.Is(err, mongo.ErrNoDocuments) {
+		return &model.Bot{Stance: stanceUnknown}, nil
 	}
-	return bot.toModel()
+	if err != nil {
+		return nil, err
+	}
+	return bot.toModel(), nil
 }
 
 // User returns a user's crypto balances.
-func User(name string) *model.User {
-	client, ctx, cancel := connect()
-	defer cancel()
-	defer client.Disconnect(ctx)
-
+func (s *Store) User(ctx context.Context, name string) (*model.User, error) {
 	var u userDoc
-	client.Database(databaseName).Collection(userColl).
-		FindOne(ctx, bson.M{"UserName": name}).Decode(&u)
-	return u.toModel()
+	err := s.db.Collection(userColl).FindOne(ctx, bson.M{"UserName": name}).Decode(&u)
+	if errors.Is(err, mongo.ErrNoDocuments) {
+		return nil, fmt.Errorf("user %q: %w", name, ErrNotFound)
+	}
+	if err != nil {
+		return nil, err
+	}
+	return u.toModel(), nil
 }
 
-// ListSymbols returns the registered assets split by class: crypto pairs are
-// quoted in USDT, everything else is treated as an equity/ETF. Both slices are
-// non-nil so the GraphQL fields always marshal as [] rather than null.
-func ListSymbols() (crypto []string, stocks []string) {
-	crypto, stocks = []string{}, []string{}
-	client, ctx, cancel := connect()
-	defer cancel()
-	defer client.Disconnect(ctx)
-
-	cursor, err := client.Database(databaseName).Collection(datastoreColl).Find(ctx, bson.M{})
+// ListSymbols returns the distinct registered assets split by class: crypto
+// pairs are quoted in USDT, everything else is an equity/ETF. Both slices are
+// non-nil so the GraphQL fields marshal as [] rather than null.
+func (s *Store) ListSymbols(ctx context.Context) (crypto []string, stocks []string, err error) {
+	names, err := s.db.Collection(datastoreColl).Distinct(ctx, "name", bson.M{})
 	if err != nil {
-		return crypto, stocks
+		return nil, nil, err
 	}
-	for cursor.Next(ctx) {
-		var ds datastoreDoc
-		cursor.Decode(&ds)
-		if strings.HasSuffix(strings.ToUpper(ds.Name), "USDT") {
-			crypto = append(crypto, ds.Name)
+	crypto, stocks = []string{}, []string{}
+	for _, n := range names {
+		name, ok := n.(string)
+		if !ok || name == "" {
+			continue
+		}
+		if isCrypto(name) {
+			crypto = append(crypto, name)
 		} else {
-			stocks = append(stocks, ds.Name)
+			stocks = append(stocks, name)
 		}
 	}
-	return crypto, stocks
+	sort.Strings(crypto)
+	sort.Strings(stocks)
+	return crypto, stocks, nil
+}
+
+func isCrypto(name string) bool {
+	const quote = "USDT"
+	return len(name) > len(quote) && name[len(name)-len(quote):] == quote
 }
