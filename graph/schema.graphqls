@@ -116,6 +116,12 @@ type Other {
 	BUYSELL: Float!
 	BUYSELLevel: String!
 	BUYSELLconf: Float!
+	# Signal on the bar it becomes known and tradeable (BUYSELL marks where a
+	# top/bottom was; a top is only confirmed bars later). 0 = HOLD.
+	ACTION: Float!
+	ACTIONconf: Float!
+	# Open time (ms) of the bar the action refers to: the top for a SELL.
+	ACTIONref: Float!
 }
 # Backend-computed trading-bot state (regime + signals + backtest). Computed in
 # the Python pipeline and merely displayed by the frontend.

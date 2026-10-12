@@ -104,6 +104,9 @@ type Other struct {
 	Buysell     float64 `json:"BUYSELL"`
 	BUYSELLevel string  `json:"BUYSELLevel"`
 	BUYSELLconf float64 `json:"BUYSELLconf"`
+	Action      float64 `json:"ACTION"`
+	ACTIONconf  float64 `json:"ACTIONconf"`
+	ACTIONref   float64 `json:"ACTIONref"`
 }
 
 type Query struct {

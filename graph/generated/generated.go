@@ -132,6 +132,9 @@ type ComplexityRoot struct {
 	}
 
 	Other struct {
+		ACTIONconf  func(childComplexity int) int
+		ACTIONref   func(childComplexity int) int
+		Action      func(childComplexity int) int
 		Amo         func(childComplexity int) int
 		Amo1        func(childComplexity int) int
 		BUYSELLconf func(childComplexity int) int
@@ -612,6 +615,24 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 
 		return e.ComplexityRoot.Macd.Line(childComplexity), true
 
+	case "Other.ACTIONconf":
+		if e.ComplexityRoot.Other.ACTIONconf == nil {
+			break
+		}
+
+		return e.ComplexityRoot.Other.ACTIONconf(childComplexity), true
+	case "Other.ACTIONref":
+		if e.ComplexityRoot.Other.ACTIONref == nil {
+			break
+		}
+
+		return e.ComplexityRoot.Other.ACTIONref(childComplexity), true
+	case "Other.ACTION":
+		if e.ComplexityRoot.Other.Action == nil {
+			break
+		}
+
+		return e.ComplexityRoot.Other.Action(childComplexity), true
 	case "Other.amo":
 		if e.ComplexityRoot.Other.Amo == nil {
 			break
@@ -1098,6 +1119,12 @@ type Other {
 	BUYSELL: Float!
 	BUYSELLevel: String!
 	BUYSELLconf: Float!
+	# Signal on the bar it becomes known and tradeable (BUYSELL marks where a
+	# top/bottom was; a top is only confirmed bars later). 0 = HOLD.
+	ACTION: Float!
+	ACTIONconf: Float!
+	# Open time (ms) of the bar the action refers to: the top for a SELL.
+	ACTIONref: Float!
 }
 # Backend-computed trading-bot state (regime + signals + backtest). Computed in
 # the Python pipeline and merely displayed by the frontend.
@@ -1361,6 +1388,12 @@ func (ec *executionContext) childFields_Other(ctx context.Context, field graphql
 		return ec.fieldContext_Other_BUYSELLevel(ctx, field)
 	case "BUYSELLconf":
 		return ec.fieldContext_Other_BUYSELLconf(ctx, field)
+	case "ACTION":
+		return ec.fieldContext_Other_ACTION(ctx, field)
+	case "ACTIONconf":
+		return ec.fieldContext_Other_ACTIONconf(ctx, field)
+	case "ACTIONref":
+		return ec.fieldContext_Other_ACTIONref(ctx, field)
 	}
 	return nil, fmt.Errorf("no field named %q was found under type Other", field.Name)
 }
@@ -3388,6 +3421,75 @@ func (ec *executionContext) _Other_BUYSELLconf(ctx context.Context, field graphq
 	)
 }
 func (ec *executionContext) fieldContext_Other_BUYSELLconf(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	return graphql.NewScalarFieldContext("Other", field, false, false, errors.New("field of type Float does not have child fields"))
+}
+
+func (ec *executionContext) _Other_ACTION(ctx context.Context, field graphql.CollectedField, obj *model.Other) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return ec.fieldContext_Other_ACTION(ctx, field)
+		},
+		func(ctx context.Context) (any, error) {
+			return obj.Action, nil
+		},
+		nil,
+		func(ctx context.Context, selections ast.SelectionSet, v float64) graphql.Marshaler {
+			return ec.marshalNFloat2float64(ctx, selections, v)
+		},
+		true,
+		true,
+	)
+}
+func (ec *executionContext) fieldContext_Other_ACTION(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	return graphql.NewScalarFieldContext("Other", field, false, false, errors.New("field of type Float does not have child fields"))
+}
+
+func (ec *executionContext) _Other_ACTIONconf(ctx context.Context, field graphql.CollectedField, obj *model.Other) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return ec.fieldContext_Other_ACTIONconf(ctx, field)
+		},
+		func(ctx context.Context) (any, error) {
+			return obj.ACTIONconf, nil
+		},
+		nil,
+		func(ctx context.Context, selections ast.SelectionSet, v float64) graphql.Marshaler {
+			return ec.marshalNFloat2float64(ctx, selections, v)
+		},
+		true,
+		true,
+	)
+}
+func (ec *executionContext) fieldContext_Other_ACTIONconf(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	return graphql.NewScalarFieldContext("Other", field, false, false, errors.New("field of type Float does not have child fields"))
+}
+
+func (ec *executionContext) _Other_ACTIONref(ctx context.Context, field graphql.CollectedField, obj *model.Other) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return ec.fieldContext_Other_ACTIONref(ctx, field)
+		},
+		func(ctx context.Context) (any, error) {
+			return obj.ACTIONref, nil
+		},
+		nil,
+		func(ctx context.Context, selections ast.SelectionSet, v float64) graphql.Marshaler {
+			return ec.marshalNFloat2float64(ctx, selections, v)
+		},
+		true,
+		true,
+	)
+}
+func (ec *executionContext) fieldContext_Other_ACTIONref(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	return graphql.NewScalarFieldContext("Other", field, false, false, errors.New("field of type Float does not have child fields"))
 }
 
@@ -6302,6 +6404,21 @@ func (ec *executionContext) _Other(ctx context.Context, sel ast.SelectionSet, ob
 			}
 		case "BUYSELLconf":
 			out.Values[i] = ec._Other_BUYSELLconf(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "ACTION":
+			out.Values[i] = ec._Other_ACTION(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "ACTIONconf":
+			out.Values[i] = ec._Other_ACTIONconf(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "ACTIONref":
+			out.Values[i] = ec._Other_ACTIONref(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
 				out.Invalids++
 			}
